@@ -1,0 +1,21 @@
+{
+    "name": "Text Snippets",
+    "version": "0.1",
+    "manifest_version": 3,
+    "description": "insert text snippets into text field via hotkeys",
+    "permissions": ["storage", "tabs", "activeTab","scripting"],
+    "background":{
+        "service_worker": "./background.js"
+    },
+    "host_permissions": [
+        "<all_urls>"
+    ],
+    "commands": {
+        "insert_snippet": {
+          "suggested_key": {
+            "default": "Ctrl+Shift+Y"
+          },
+          "description": "Insert a text snippet"
+        }
+      }
+}
