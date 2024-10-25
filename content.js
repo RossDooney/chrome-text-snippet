@@ -11,15 +11,25 @@ const snippetExamples={
 document.addEventListener('keydown', function(event) {
 
     const currentKey = event.key
-    console.log(`Keycode = ${event.key.charCodeAt(0)}`)
 
-    if(!insertSearch)
-    
-    if(currentKey.charCodeAt(0) === 92 && !insertSearch){
-        insertSearch = true
+    if(currentKey.charCodeAt(0) != 92 && !insertSearch){
+        console.log("Search not active")
         return
     }
 
+    if(currentKey.charCodeAt(0) === 69 && insertSearch){
+        console.log(`Searching for: ${searchString}`)
+        return
+    }
+    
+    else if(currentKey.charCodeAt(0) === 92 && !insertSearch){
+        insertSearch = true
+        console.log("search enabled")
+        return
+    }
 
+    searchString += currentKey.charAt(0);
+
+    console.log(`Current search string: ${searchString}`);
 
 });

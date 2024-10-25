@@ -1,13 +1,26 @@
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, )=>{
-    if(changeInfo.status === "complete"){
-        chrome.scripting.executeScript({
-            target: {tabId},
-            files: ["./content.js"]
-        }).then(() =>{
-            console.log("content script injected")
-        }).catch(err => console.log(err, "error injecting script"))
-    }
-})
+chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+  if (changeInfo.status === "complete") {
+      chrome.scripting.executeScript({
+          target: { tabId: tabId },
+          func: () => !!window.isScriptInjected
+      }).then((results) => {
+          if (results[0].result) {
+              console.log("content.js already injected");
+              return;
+          }
+          chrome.scripting.executeScript({
+              target: { tabId: tabId },
+              files: ["./content.js"]
+          }).then(() => {
+              chrome.scripting.executeScript({
+                  target: { tabId: tabId },
+                  func: () => { window.isScriptInjected = true; }
+              });
+              console.log("content script injected");
+          }).catch(err => console.log(err, "error injecting script"));
+      }).catch(err => console.log(err, "error checking script"));
+  }
+});
 
 
 chrome.commands.onCommand.addListener((command) => {
@@ -20,8 +33,7 @@ chrome.commands.onCommand.addListener((command) => {
       });
     }
   });
-  
-  // Define the text snippet you want to insert
+
   function insertText() {
     const snippet = "Predefined Text";
     
