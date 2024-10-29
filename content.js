@@ -11,18 +11,28 @@ const snippetExamples={
 document.addEventListener('keydown', function(event) {
 
     const currentKey = event.key
+    const activeElement = document.activeElement;
 
-    if(currentKey.charCodeAt(0) != 92 && !insertSearch){
+    if (!activeElement.tagName === "TEXTAREA" || !activeElement.tagName === "INPUT") {
+        return
+    }
+
+    if(currentKey.charCodeAt(0) != 47 && !insertSearch){
         console.log("Search not active")
         return
     }
 
     if(currentKey.charCodeAt(0) === 69 && insertSearch){
-        console.log(`Searching for: ${searchString}`)
+        console.log(`Searching for: ${searchString}`);
+        console.log(`Last character in string: ${activeElement.value[activeElement.value.length - 1]}`);
+        activeElement.value += searchString;
+        insertSearch = false;
+        searchString = "";
+
         return
     }
     
-    else if(currentKey.charCodeAt(0) === 92 && !insertSearch){
+    else if(currentKey.charCodeAt(0) === 47 && !insertSearch){
         insertSearch = true
         console.log("search enabled")
         return
