@@ -24,8 +24,7 @@ document.addEventListener('keydown', function(event) {
 
     if(currentKey.charCodeAt(0) === 69 && insertSearch){
         console.log(`Searching for: ${searchString}`);
-        console.log(`Last character in string: ${activeElement.value[activeElement.value.length - 1]}`);
-        activeElement.value += searchString;
+        activeElement.value = activeElement.value.slice(0, -(searchString.length + 1)) + searchString;
         insertSearch = false;
         searchString = "";
 
