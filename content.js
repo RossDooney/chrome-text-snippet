@@ -4,6 +4,8 @@ let insertSearch = false
 let searchString = ""
 let statSearchKey = 92
 let searchStartPoint = 0
+let searchLength = 0
+
 const snippetExamples={
     hi: "Hello, thank you for contacting us",
     bye: "best regards"
@@ -13,6 +15,8 @@ document.addEventListener('keydown', function(event) {
 
     const currentKey = event.key
     const activeElement = document.activeElement;
+
+ //   console.log(currentKey.charCodeAt(0))
     
     if (!activeElement.tagName === "TEXTAREA" || !activeElement.tagName === "INPUT") {
         return
@@ -24,34 +28,47 @@ document.addEventListener('keydown', function(event) {
     }
 
     if(currentKey.charCodeAt(0) === 69 && insertSearch){
-        console.log(`Searching for: ${snippetExamples[searchString]}`);
+
+        searchString = activeElement.value.slice((searchStartPoint + 1), (searchStartPoint + searchLength + 1))
         event.preventDefault();
         if(!snippetExamples[searchString]){
             console.log("Not a valid search string");
-            insertSearch = false;
-            searchString = "";
+            resetSearch()
             return
         }
         const insertEnd = searchStartPoint + searchString.length + 1;
-        console.log("Insert Start: ", searchStartPoint);
-        console.log("Insert end: ", insertEnd);
-        activeElement.setRangeText(snippetExamples[searchString], searchStartPoint, insertEnd, 'select')
+        activeElement.setRangeText(snippetExamples[searchString], searchStartPoint, insertEnd, 'select');
+        
         //activeElement.value = activeElement.value.slice(0, -(searchString.length + 1)) + snippetExamples[searchString];
-        insertSearch = false;
-        searchString = "";
+        resetSearch()
 
         return
     }
+
     
-    else if(currentKey.charCodeAt(0) === 47 && !insertSearch){
+    if(currentKey.charCodeAt(0) === 47 && !insertSearch){
         insertSearch = true;
         searchStartPoint = activeElement.selectionStart;
         console.log("search enabled at: ", searchStartPoint);
         return
     }
 
-    searchString += currentKey.charAt(0);
+    if(currentKey.charCodeAt(0) === 66 && insertSearch){
+        if(searchLength <= 0){
+            resetSearch()
+            return
+        }
+        searchLength -= 1;
+        console.log("Search size: " + searchLength);
+        return
+    }
 
-    console.log(`Current search string: ${searchString}`);
+    searchLength += 1;
 
 });
+
+function resetSearch() {
+    insertSearch = false;
+    searchString = "";
+    searchLength = 0
+}
