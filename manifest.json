@@ -5,7 +5,7 @@
     "description": "insert text snippets into text field via hotkeys",
     "permissions": ["storage", "tabs", "activeTab","scripting"],
     "background":{
-        "service_worker": "./background.js"
+        "service_worker": "./scripts/background.js"
     },
     "host_permissions": [
         "<all_urls>"
