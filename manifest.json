@@ -5,11 +5,14 @@
     "description": "insert text snippets into text field via hotkeys",
     "permissions": ["storage", "tabs", "activeTab","scripting"],
     "background":{
-        "service_worker": "./scripts/background.js"
+        "service_worker": "./background.js"
     },
     "host_permissions": [
         "<all_urls>"
     ],
+    "action":{
+      "default_popup": "popup.html"
+    },
     "commands": {
         "insert_snippet": {
           "suggested_key": {
