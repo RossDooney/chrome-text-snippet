@@ -34,7 +34,7 @@ chrome.commands.onCommand.addListener((command) => {
     }
   });
 
-  function insertText() {
+function insertText() {
     const snippet = "Predefined Text";
     
     const activeElement = document.activeElement;
@@ -42,4 +42,17 @@ chrome.commands.onCommand.addListener((command) => {
     if (activeElement.tagName === "TEXTAREA" || activeElement.tagName === "INPUT") {
       activeElement.value += snippet;
     }
+}
+
+chrome.runtime.onMessage.addListener(data =>{
+  switch(data.event){
+    case "onStop":
+      console.log("stop pressed");
+      break;
+    case "onStart":
+      console.log("start pressed");
+      break;
+    default:
+      break;
   }
+})

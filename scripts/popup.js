@@ -1,18 +1,13 @@
-// popup.js
-document.getElementById("create").addEventListener("click", function() {
-    initDatabase();
-    document.getElementById("output").innerText = "Database created!";
-});
+const startButton = document.getElementById("start");
+const stopButton = document.getElementById("stop");
 
-document.getElementById("insert").addEventListener("click", function() {
-    const value = prompt("Enter a value to insert:");
-    if (value) {
-        insertData(value);
-        document.getElementById("output").innerText = `Inserted: ${value}`;
-    }
-});
+console.log("1")
 
-document.getElementById("fetch").addEventListener("click", function() {
-    const results = fetchData();
-    document.getElementById("output").innerText = results.length ? JSON.stringify(results) : "No data found.";
-});
+startButton.onclick = () => {
+    console.log("2")
+    chrome.runtime.sendMessage({ event: 'onStart'})
+};
+
+stopButton.onclick = () => {
+    chrome.runtime.sendMessage({ event: 'onStop'})
+};
