@@ -45,14 +45,21 @@ function insertText() {
 }
 
 chrome.runtime.onMessage.addListener(data =>{
-  switch(data.event){
+  const {event, snippet} = data
+  switch(event){
     case "onStop":
       console.log("stop pressed");
       break;
     case "onStart":
-      console.log("start pressed");
+      handleSave(snippet)
       break;
     default:
       break;
   }
 })
+
+const handleSave = (snippet) =>{
+  const {snippetCode, snippetText} = snippet
+  console.log("start pressed: ",  snippetText);
+  chrome.storage.local.set(snippet)
+}

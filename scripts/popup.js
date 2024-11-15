@@ -1,11 +1,27 @@
 const startButton = document.getElementById("start");
 const stopButton = document.getElementById("stop");
+const snippetCode = document.getElementById("snippetCode");
+const snippetText = document.getElementById("snippetText");
 
-console.log("1")
+chrome.storage.local.get(["snippetText"], (result) =>{
+    const snipText = result["snippetText"];
+
+    if(snipText){
+
+        snippetText.value = snipText;
+    }
+    if(!snipText){
+        console.log("snip text empty");
+    }
+})
 
 startButton.onclick = () => {
-    console.log("2")
-    chrome.runtime.sendMessage({ event: 'onStart'})
+    const snippet = {
+        snippetCode: snippetCode.value,
+        snippetText: snippetText.value
+    }
+
+    chrome.runtime.sendMessage({ event: 'onStart', snippet })
 };
 
 stopButton.onclick = () => {
