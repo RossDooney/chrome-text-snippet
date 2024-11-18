@@ -1,5 +1,4 @@
-const startButton = document.getElementById("start");
-const stopButton = document.getElementById("stop");
+const addButton = document.getElementById("add");
 const snippetCode = document.getElementById("snippetCode");
 const snippetText = document.getElementById("snippetText");
 
@@ -15,7 +14,7 @@ chrome.storage.local.get(["snippetText"], (result) =>{
     }
 })
 
-startButton.onclick = () => {
+addButton.onclick = () => {
     const snippet = {
         snippetCode: snippetCode.value,
         snippetText: snippetText.value
@@ -24,6 +23,3 @@ startButton.onclick = () => {
     chrome.runtime.sendMessage({ event: 'onStart', snippet })
 };
 
-stopButton.onclick = () => {
-    chrome.runtime.sendMessage({ event: 'onStop'})
-};

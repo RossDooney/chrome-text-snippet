@@ -63,3 +63,73 @@ const handleSave = (snippet) =>{
   console.log("start pressed: ",  snippetText);
   chrome.storage.local.set(snippet)
 }
+
+
+let snippets = [{
+  "snippetCode": "hi",
+  "snippetText": "Hello, thank you for contacting us"
+},
+{
+  "snippetCode": "bye",
+  "snippetText": "best regards"
+},
+]
+
+let db = null
+
+function create_database(){
+  const request = window.indexedDB.open('testDB');
+
+  request.onerror = function(event){
+    console.log("unable to open db")
+  }
+
+  request.onupgradeneeded = function(event){
+    db = event.target.result;
+    let objectStore = db.createObjectStore('snippet', {
+      keypath: "snippetCode"
+    });
+
+    objectStore.transaction.oncomplete = function(event){
+      console.log("Object store created");
+    }
+  }
+
+  request.onsuccess = function(event){
+    db = event.target.result;
+
+    console.log("DB opened")
+  }
+
+}
+
+function delete_database(){
+  const request = window.indexedDB.deleteDatabase('testDB');
+
+  request.onerror = function(event){
+    console.log("unable to open db")
+  }
+
+  request.onsuccess = function(event){
+    db = event.target.result;
+
+    console.log("DB Deleted")
+  }
+}
+
+function insert_snippet(snippet){
+  if(db){
+    const insert_transaction = db.transaction("snippets", "readwrite");
+    const objectStore = insert_transaction.objectStore("snippets");
+
+    insert_transaction.oncomplete = function
+
+    snippets.forEach(snippet => {
+      let request = objectStore.add(snippet)
+
+      request.onsuccess = function(){
+        console.log("AddedL ", snippet);
+      }
+    })
+  }
+}
