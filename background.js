@@ -34,6 +34,43 @@ chrome.commands.onCommand.addListener((command) => {
     }
   });
 
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  if(request.message === 'insert'){
+
+  }
+  else if(request.message === 'insert'){
+
+  }
+  else if(request.message === 'insert'){
+
+  }
+  else if(request.message === 'insert'){
+
+  }
+})
+
+chrome.runtime.onMessage.addListener(data =>{
+  switch(data.event){
+    case "insert":
+      console.log("insert pressed");
+      break;
+    case "get":
+      console.log("get pressed");
+      break;
+    case "update":
+      console.log("update pressed");
+      break;
+    case "delete":
+      console.log("delete pressed");
+      break;    
+    default:
+      break;
+  }
+})
+
+
+
+
 function insertText() {
     const snippet = "Predefined Text";
     
@@ -42,26 +79,6 @@ function insertText() {
     if (activeElement.tagName === "TEXTAREA" || activeElement.tagName === "INPUT") {
       activeElement.value += snippet;
     }
-}
-
-chrome.runtime.onMessage.addListener(data =>{
-  const {event, snippet} = data
-  switch(event){
-    case "onStop":
-      console.log("stop pressed");
-      break;
-    case "onStart":
-      handleSave(snippet)
-      break;
-    default:
-      break;
-  }
-})
-
-const handleSave = (snippet) =>{
-  const {snippetCode, snippetText} = snippet
-  console.log("start pressed: ",  snippetText);
-  chrome.storage.local.set(snippet)
 }
 
 
@@ -85,7 +102,6 @@ function create_database(){
   }
 
   request.onupgradeneeded = function(event){
-    console.log("1")
     db = event.target.result;
     let objectStore = db.createObjectStore('snippets', {
       keyPath: "snippetCode"
@@ -108,7 +124,7 @@ function create_database(){
       console.log("Failed to open DB")
     }
   }
-
+  
 }
 
 function delete_database(){
@@ -153,7 +169,7 @@ function get_snippets(snippetCode){
   if(db){
     const get_transaction = db.transaction("snippets", "readonly");
     const objectStore = get_transaction.objectStore("snippets");
-
+    console.log("asd")
     get_transaction.onerror = function(){
       console.log("There was an error getting records.")
     }
@@ -175,11 +191,11 @@ function update_snippe(record){
     const put_transaction = db.transaction("snippets", "readwrite");
     const objectStore = put_transaction.objectStore("snippets");
 
-    update_transaction.onerror = function(){
+    put_transaction.onerror = function(){
       console.log("There was an error updating.")
     }
     
-    update_transaction.oncomplete = function(){
+    put_transaction.oncomplete = function(){
       console.log("Update completed.")
     }
 
@@ -205,4 +221,5 @@ function delete_snippe(snippetCode){
   }
 }
 
+delete_database()
 create_database();
