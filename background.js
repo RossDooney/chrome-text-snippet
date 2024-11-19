@@ -65,7 +65,7 @@ const handleSave = (snippet) =>{
 }
 
 
-let snippets = [{
+let snippets_example = [{
   "snippetCode": "hi",
   "snippetText": "Hello, thank you for contacting us"
 },
@@ -78,17 +78,19 @@ let snippets = [{
 let db = null
 
 function create_database(){
-  const request = window.indexedDB.open('testDB');
+  const request = indexedDB.open('testDB',1);
 
   request.onerror = function(event){
-    console.log("unable to open db")
+    console.log("unable to open db");
   }
 
   request.onupgradeneeded = function(event){
+    console.log("1")
     db = event.target.result;
-    let objectStore = db.createObjectStore('snippet', {
-      keypath: "snippetCode"
+    let objectStore = db.createObjectStore('snippets', {
+      keyPath: "snippetCode"
     });
+
 
     objectStore.transaction.oncomplete = function(event){
       console.log("Object store created");
@@ -99,12 +101,18 @@ function create_database(){
     db = event.target.result;
 
     console.log("DB opened")
+
+    insert_snippets(snippets_example)
+
+    db.onerror = function(event){
+      console.log("Failed to open DB")
+    }
   }
 
 }
 
 function delete_database(){
-  const request = window.indexedDB.deleteDatabase('testDB');
+  const request = indexedDB.deleteDatabase('testDB');
 
   request.onerror = function(event){
     console.log("unable to open db")
@@ -117,13 +125,13 @@ function delete_database(){
   }
 }
 
-function insert_snippet(snippet){
+function insert_snippets(snippet){
   if(db){
     const insert_transaction = db.transaction("snippets", "readwrite");
     const objectStore = insert_transaction.objectStore("snippets");
 
     insert_transaction.onerror = function(){
-      console.log("There was an erro inserting.")
+      console.log("There was an error inserting.")
     }
     
     insert_transaction.oncomplete = function(){
@@ -131,7 +139,7 @@ function insert_snippet(snippet){
     }
 
 
-    snippets.forEach(snippet => {
+    snippets_example.forEach(snippet => {
       let request = objectStore.add(snippet)
 
       request.onsuccess = function(){
@@ -175,5 +183,26 @@ function update_snippe(record){
       console.log("Update completed.")
     }
 
+    objectStore.put(record)
+
   }
 }
+
+function delete_snippe(snippetCode){
+  if(db){
+    const delete_transaction = db.transaction("snippets", "readwrite");
+    const objectStore = delete_transaction.objectStore("snippets");
+
+    delete_transaction.onerror = function(){
+      console.log("There was an error deleting.")
+    }
+    
+    delete_transaction.oncomplete = function(){
+      console.log("Delete  completed.")
+    }
+
+    objectStore.delete(snippetCode)
+  }
+}
+
+create_database();
