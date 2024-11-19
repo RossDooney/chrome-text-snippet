@@ -122,14 +122,58 @@ function insert_snippet(snippet){
     const insert_transaction = db.transaction("snippets", "readwrite");
     const objectStore = insert_transaction.objectStore("snippets");
 
-    insert_transaction.oncomplete = function
+    insert_transaction.onerror = function(){
+      console.log("There was an erro inserting.")
+    }
+    
+    insert_transaction.oncomplete = function(){
+      console.log("Insert completed.")
+    }
+
 
     snippets.forEach(snippet => {
       let request = objectStore.add(snippet)
 
       request.onsuccess = function(){
-        console.log("AddedL ", snippet);
+        console.log("Added ", snippet);
       }
     })
+  }
+}
+
+function get_snippets(snippetCode){
+  if(db){
+    const get_transaction = db.transaction("snippets", "readonly");
+    const objectStore = get_transaction.objectStore("snippets");
+
+    get_transaction.onerror = function(){
+      console.log("There was an error getting records.")
+    }
+    
+    get_transaction.oncomplete = function(){
+      console.log("Get completed.")
+    }
+
+    let request = objectStore.get(snippetCode);
+
+    request.onsuccess = function(event){
+      console.log(event.target.result);
+    }
+  }
+}
+
+function update_snippe(record){
+  if(db){
+    const put_transaction = db.transaction("snippets", "readwrite");
+    const objectStore = put_transaction.objectStore("snippets");
+
+    update_transaction.onerror = function(){
+      console.log("There was an error updating.")
+    }
+    
+    update_transaction.oncomplete = function(){
+      console.log("Update completed.")
+    }
+
   }
 }
