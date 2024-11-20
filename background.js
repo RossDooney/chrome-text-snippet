@@ -35,12 +35,18 @@ chrome.commands.onCommand.addListener((command) => {
   });
 
 chrome.runtime.onMessage.addListener(data =>{
-  switch(data.event){
+  const {event, snippet } = data
+  switch(event){
     case "insert":
       console.log("insert pressed");
       break;
     case "get":
-      console.log("get pressed");
+      console.log("Snippet code", snippet.snippetCode)
+      get_snippets(snippet.snippetCode, function(snippet) {
+        const {snippetCode, snippetText} = snippet
+        console.log("Snippet Code: ", snippetCode);
+        console.log("Snippet Text: ", snippetText);
+      });
       break;
     case "update":
       console.log("update pressed");
@@ -52,9 +58,6 @@ chrome.runtime.onMessage.addListener(data =>{
       break;
   }
 })
-
-
-
 
 function insertText() {
     const snippet = "Predefined Text";
@@ -120,7 +123,6 @@ function delete_database(){
 
   request.onsuccess = function(event){
     db = event.target.result;
-
     console.log("DB Deleted")
   }
 }
@@ -136,12 +138,6 @@ function insert_snippets(snippet){
     
     insert_transaction.oncomplete = function(){
       console.log("Insert completed.")
-
-      get_snippets("hi", function(snippet) {
-        const {snippetCode, snippetText} = snippet
-        console.log("Snippet Code: ", snippetCode);
-        console.log("Snippet Text: ", snippetText);
-      });
     }
 
 
