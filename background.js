@@ -38,10 +38,9 @@ chrome.runtime.onMessage.addListener(data =>{
   const {event, snippet } = data
   switch(event){
     case "insert":
-      console.log("insert pressed");
+      insert_snippets(snippet)
       break;
     case "get":
-      console.log("Snippet code", snippet.snippetCode)
       get_snippets(snippet.snippetCode, function(snippet) {
         const {snippetCode, snippetText} = snippet
         console.log("Snippet Code: ", snippetCode);
@@ -127,7 +126,7 @@ function delete_database(){
   }
 }
 
-function insert_snippets(snippet){
+function insert_snippets(snippets){
   if(db){
     const insert_transaction = db.transaction("snippets", "readwrite");
     const objectStore = insert_transaction.objectStore("snippets");
@@ -140,14 +139,22 @@ function insert_snippets(snippet){
       console.log("Insert completed.")
     }
 
-
-    snippets_example.forEach(snippet => {
-      let request = objectStore.add(snippet)
-
+    if(Array.isArray(snippets)){
+      snippets.forEach(snippet => {
+        let request = objectStore.add(snippet)
+  
+        request.onsuccess = function(){
+          console.log("Added ", snippet);
+        }
+      })
+    }
+    else{
+      let request = objectStore.add(snippets)
+  
       request.onsuccess = function(){
-        console.log("Added ", snippet);
+        console.log("Added ", snippets);
       }
-    })
+    }   
 
   }
 }
