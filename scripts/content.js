@@ -11,13 +11,11 @@ const snippetExamples={
     bye: "best regards"
 }
 
-document.addEventListener('keydown', function(event) {
+document.addEventListener('keydown', async function(event) {
 
     const currentKey = event.key
     const activeElement = document.activeElement;
 
- //   console.log(currentKey.charCodeAt(0))
-    
     if (!activeElement.tagName === "TEXTAREA" || !activeElement.tagName === "INPUT") {
         return
     }
@@ -30,7 +28,8 @@ document.addEventListener('keydown', function(event) {
     if(currentKey.charCodeAt(0) === 69 && insertSearch){
 
         searchString = activeElement.value.slice((searchStartPoint + 1), (searchStartPoint + searchLength + 1))
-        event.preventDefault();
+        let x = await fetchSnippets(searchString);  
+        console.log("Results: ", x)
         if(!snippetExamples[searchString]){
             console.log("Not a valid search string");
             resetSearch()
@@ -71,4 +70,15 @@ function resetSearch() {
     insertSearch = false;
     searchString = "";
     searchLength = 0
+}
+async function fetchSnippets(searchString) {
+    return new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage({ event: "get", searchString }, (response) => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve(response);
+        }
+      });
+    });
 }

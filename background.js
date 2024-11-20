@@ -23,28 +23,26 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
 });
 
 
-chrome.commands.onCommand.addListener((command) => {
-    if (command === "insert_snippet") {
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        chrome.scripting.executeScript({
-          target: { tabId: tabs[0].id },
-          function: insertText
-        });
-      });
-    }
-  });
+// chrome.commands.onCommand.addListener((command) => {
+//     if (command === "insert_snippet") {
+//       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+//         chrome.scripting.executeScript({
+//           target: { tabId: tabs[0].id },
+//           function: insertText
+//         });
+//       });
+//     }
+//   });
 
-chrome.runtime.onMessage.addListener(data =>{
-  const {event, snippet } = data
-  switch(event){
+chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
+  switch(data.event){
     case "insert":
-      insert_snippets(snippet)
+      insert_snippets(data.snippet)
       break;
     case "get":
-      get_snippets(snippet.snippetCode, function(snippet) {
+      get_snippets(data.searchString, function(snippet) {
         const {snippetCode, snippetText} = snippet
-        console.log("Snippet Code: ", snippetCode);
-        console.log("Snippet Text: ", snippetText);
+        sendResponse({ snippetCode, snippetText });
       });
       break;
     case "update":
@@ -58,15 +56,15 @@ chrome.runtime.onMessage.addListener(data =>{
   }
 })
 
-function insertText() {
-    const snippet = "Predefined Text";
+// function insertText() {
+//     const snippet = "Predefined Text";
     
-    const activeElement = document.activeElement;
+//     const activeElement = document.activeElement;
   
-    if (activeElement.tagName === "TEXTAREA" || activeElement.tagName === "INPUT") {
-      activeElement.value += snippet;
-    }
-}
+//     if (activeElement.tagName === "TEXTAREA" || activeElement.tagName === "INPUT") {
+//       activeElement.value += snippet;
+//     }
+// }
 
 
 let snippets_example = [{
