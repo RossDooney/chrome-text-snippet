@@ -34,21 +34,6 @@ chrome.commands.onCommand.addListener((command) => {
     }
   });
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if(request.message === 'insert'){
-
-  }
-  else if(request.message === 'insert'){
-
-  }
-  else if(request.message === 'insert'){
-
-  }
-  else if(request.message === 'insert'){
-
-  }
-})
-
 chrome.runtime.onMessage.addListener(data =>{
   switch(data.event){
     case "insert":
@@ -118,8 +103,7 @@ function create_database(){
 
     console.log("DB opened")
 
-    insert_snippets(snippets_example)
-
+    insert_snippets(snippets_example);
     db.onerror = function(event){
       console.log("Failed to open DB")
     }
@@ -152,6 +136,12 @@ function insert_snippets(snippet){
     
     insert_transaction.oncomplete = function(){
       console.log("Insert completed.")
+
+      get_snippets("hi", function(snippet) {
+        const {snippetCode, snippetText} = snippet
+        console.log("Snippet Code: ", snippetCode);
+        console.log("Snippet Text: ", snippetText);
+      });
     }
 
 
@@ -162,14 +152,14 @@ function insert_snippets(snippet){
         console.log("Added ", snippet);
       }
     })
+
   }
 }
 
-function get_snippets(snippetCode){
+function get_snippets(snippetCode, get_callback){
   if(db){
     const get_transaction = db.transaction("snippets", "readonly");
     const objectStore = get_transaction.objectStore("snippets");
-    console.log("asd")
     get_transaction.onerror = function(){
       console.log("There was an error getting records.")
     }
@@ -181,7 +171,7 @@ function get_snippets(snippetCode){
     let request = objectStore.get(snippetCode);
 
     request.onsuccess = function(event){
-      console.log(event.target.result);
+      get_callback(event.target.result);
     }
   }
 }
@@ -221,5 +211,5 @@ function delete_snippe(snippetCode){
   }
 }
 
-delete_database()
+delete_database();
 create_database();
