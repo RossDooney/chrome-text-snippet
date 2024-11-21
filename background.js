@@ -44,7 +44,7 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
         const {snippetCode, snippetText} = snippet
         sendResponse({ snippetCode, snippetText });
       });
-      break;
+      return true;
     case "update":
       console.log("update pressed");
       break;

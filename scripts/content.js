@@ -6,10 +6,6 @@ let statSearchKey = 92
 let searchStartPoint = 0
 let searchLength = 0
 
-const snippetExamples={
-    hi: "Hello, thank you for contacting us",
-    bye: "best regards"
-}
 
 document.addEventListener('keydown', async function(event) {
 
@@ -29,14 +25,14 @@ document.addEventListener('keydown', async function(event) {
 
         searchString = activeElement.value.slice((searchStartPoint + 1), (searchStartPoint + searchLength + 1))
         let x = await fetchSnippets(searchString);  
-        console.log("Results: ", x)
-        if(!snippetExamples[searchString]){
-            console.log("Not a valid search string");
-            resetSearch()
-            return
-        }
+        console.log("Results: ", x.snippetText)
+        // if(!snippetExamples[searchString]){
+        //     console.log("Not a valid search string");
+        //     resetSearch()
+        //     return
+        // }
         const insertEnd = searchStartPoint + searchString.length + 1;
-        activeElement.setRangeText(snippetExamples[searchString], searchStartPoint, insertEnd, 'select');
+        activeElement.setRangeText(x.snippetText, searchStartPoint, insertEnd, 'select');
         
         //activeElement.value = activeElement.value.slice(0, -(searchString.length + 1)) + snippetExamples[searchString];
         resetSearch()
