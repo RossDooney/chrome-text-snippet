@@ -25,19 +25,16 @@ document.addEventListener('keydown', async function(event) {
 
         searchString = activeElement.value.slice((searchStartPoint + 1), (searchStartPoint + searchLength + 1))
         let x = await fetchSnippets(searchString);  
-        console.log("Results: ", x.snippetText)
-        // if(!snippetExamples[searchString]){
-        //     console.log("Not a valid search string");
-        //     resetSearch()
-        //     return
-        // }
-        const insertEnd = searchStartPoint + searchString.length + 1;
-        activeElement.setRangeText(x.snippetText, searchStartPoint, insertEnd, 'select');
-        
-        //activeElement.value = activeElement.value.slice(0, -(searchString.length + 1)) + snippetExamples[searchString];
-        resetSearch()
+        if(x.snippetText){
+            const insertEnd = searchStartPoint + searchString.length + 1;
+            activeElement.setRangeText(x.snippetText, searchStartPoint, insertEnd, 'select');
+            resetSearch()
+            return
+        }
 
-        return
+        console.log("Nothing found")
+        resetSearch()
+        return  
     }
 
     

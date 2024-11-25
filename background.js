@@ -40,9 +40,15 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
       insert_snippets(data.snippet)
       break;
     case "get":
+      console.log("Snippet code to search: " ,data.searchString)
       get_snippets(data.searchString, function(snippet) {
-        const {snippetCode, snippetText} = snippet
-        sendResponse({ snippetCode, snippetText });
+        if(snippet){
+          const {snippetCode, snippetText} = snippet
+          sendResponse({ snippetCode, snippetText });
+        }else{
+          console.log("Error line 49")
+          sendResponse({ error: "Snippet not found" });
+        }
       });
       return true;
     case "update":
@@ -171,8 +177,18 @@ function get_snippets(snippetCode, get_callback){
 
     let request = objectStore.get(snippetCode);
 
+    request.onerror = function(event){
+      console.log("unable to find snippet");
+    }
+
     request.onsuccess = function(event){
-      get_callback(event.target.result);
+      result = event.target.result
+      if(result){
+        get_callback(event.target.result);
+      }else{
+        console.log("Not founds, line 184")
+        get_callback(undefined)
+      }
     }
   }
 }
