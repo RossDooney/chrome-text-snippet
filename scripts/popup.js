@@ -17,11 +17,11 @@ insertButton.onclick = () => {
 
 getButton.onclick = () => {
     const snippet = {
-        snippetCode: snippetCode.value,
+        searchString: snippetCode.value,
         snippetText: snippetText.value
     }
 
-    chrome.runtime.sendMessage({ event: 'get', snippet })
+    chrome.runtime.sendMessage({ event: 'get', searchString })
 };
 
 updateButton.onclick = () => {
