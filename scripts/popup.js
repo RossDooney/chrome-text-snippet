@@ -6,13 +6,13 @@ const snippetCode = document.getElementById("snippetCode");
 const snippetText = document.getElementById("snippetText");
 
 
-insertButton.onclick = () => {
+insertButton.onclick = async function(){
     const snippet = {
         snippetCode: snippetCode.value,
         snippetText: snippetText.value
     }
-    
-    chrome.runtime.sendMessage({ event: 'insert', snippet })
+    let result = await insertSnippets(snippet);
+    console.log("Insert click result: ", result)
 };
 
 getButton.onclick = async function(){
@@ -46,6 +46,18 @@ deleteButton.onclick = () => {
 async function fetchSnippets(searchString) {
     return new Promise((resolve, reject) => {
       chrome.runtime.sendMessage({ event: "get", searchString }, (response) => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve(response);
+        }
+      });
+    });
+}
+
+async function insertSnippets(snippet) {
+    return new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage({ event: "insert", snippet}, (response) => {
         if (chrome.runtime.lastError) {
           reject(chrome.runtime.lastError);
         } else {

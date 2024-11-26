@@ -37,8 +37,17 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
 chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
   switch(data.event){
     case "insert":
-      insert_snippets(data.snippet)
-      break;
+      console.log("Snippet code to insert: " ,data.snippet)
+      insert_snippets(data.snippet, function(snippet) {
+        if(snippet){
+          const {snippetCode, snippetText} = snippet
+          sendResponse({ snippetCode, snippetText });
+        }else{
+          console.log("Error line 46")
+          sendResponse({ error: "Snippet failed to insert" });
+        }
+      });
+      return true;
     case "get":
       console.log("Snippet code to search: " ,data.searchString)
       get_snippets(data.searchString, function(snippet) {
@@ -46,7 +55,7 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
           const {snippetCode, snippetText} = snippet
           sendResponse({ snippetCode, snippetText });
         }else{
-          console.log("Error line 49")
+          console.log("Error line 58")
           sendResponse({ error: "Snippet not found" });
         }
       });
@@ -130,7 +139,7 @@ function delete_database(){
   }
 }
 
-function insert_snippets(snippets){
+function insert_snippets(snippets, insert_callback){
   if(db){
     const insert_transaction = db.transaction("snippets", "readwrite");
     const objectStore = insert_transaction.objectStore("snippets");
@@ -155,8 +164,13 @@ function insert_snippets(snippets){
     else{
       let request = objectStore.add(snippets)
   
-      request.onsuccess = function(){
-        console.log("Added ", snippets);
+      request.onerror = function(){
+        console.log("unable to add snippet");
+      }
+  
+      request.onsuccess = function(event){
+        result = event.target.result
+        insert_callback(event.target.result);
       }
     }   
 
@@ -177,7 +191,7 @@ function get_snippets(snippetCode, get_callback){
 
     let request = objectStore.get(snippetCode);
 
-    request.onerror = function(event){
+    request.onerror = function(){
       console.log("unable to find snippet");
     }
 
