@@ -11,17 +11,18 @@ insertButton.onclick = () => {
         snippetCode: snippetCode.value,
         snippetText: snippetText.value
     }
-
+    
     chrome.runtime.sendMessage({ event: 'insert', snippet })
 };
 
-getButton.onclick = () => {
+getButton.onclick = async function(){
     const snippet = {
         searchString: snippetCode.value,
         snippetText: snippetText.value
     }
+    let result = await fetchSnippets(snippet.searchString);
+    console.log("Get click reslt: ", result.snippetText)
 
-    chrome.runtime.sendMessage({ event: 'get', searchString })
 };
 
 updateButton.onclick = () => {
@@ -41,3 +42,15 @@ deleteButton.onclick = () => {
 
     chrome.runtime.sendMessage({ event: 'delete', snippet })
 };
+
+async function fetchSnippets(searchString) {
+    return new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage({ event: "get", searchString }, (response) => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          resolve(response);
+        }
+      });
+    });
+}
