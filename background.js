@@ -74,7 +74,7 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
       return true;
     case "delete":
       console.log("Snippet code to Delete: " ,data.searchString)
-      get_snippets(data.searchString, function(snippet) {
+      delete_snippet(data.searchString, function(snippet) {
         if(snippet){
           const {snippetCode, snippetText} = snippet
           sendResponse({ snippetCode, snippetText });
@@ -252,7 +252,7 @@ function update_snippet(snippet, update_callback){
   }
 }
 
-function delete_snippe(snippetCode, delete_callback){
+function delete_snippet(snippetCode, delete_callback){
   if(db){
     const delete_transaction = db.transaction("snippets", "readwrite");
     const objectStore = delete_transaction.objectStore("snippets");

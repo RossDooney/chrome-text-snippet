@@ -25,22 +25,22 @@ getButton.onclick = async function(){
 
 };
 
-updateButton.onclick = () => {
+updateButton.onclick = async function() {
     const snippet = {
-        snippetCode: snippetCode.value,
-        snippetText: snippetText.value
+      snippetCode: snippetCode.value,
+      snippetText: snippetText.value
     }
-
-    chrome.runtime.sendMessage({ event: 'update', snippet })
+    let result = await updateSnippet(snippet);
+    console.log("Update click result: ", result)
 };
 
-deleteButton.onclick = () => {
+deleteButton.onclick = async function() {
     const snippet = {
-        snippetCode: snippetCode.value,
-        snippetText: snippetText.value
+      searchString: snippetCode.value,
+     snippetText: snippetText.value
     }
-
-    chrome.runtime.sendMessage({ event: 'delete', snippet })
+    let result = await deleteSnippet(snippet.searchString);
+    console.log("Delete click reslt: ", result.snippetText)
 };
 
 async function fetchSnippets(searchString) {
@@ -65,4 +65,28 @@ async function insertSnippets(snippet) {
         }
       });
     });
+}
+
+async function updateSnippet(snippet) {
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage({ event: "update", snippet}, (response) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve(response);
+      }
+    });
+  });
+}
+
+async function deleteSnippet(searchString) {
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage({ event: "delete", searchString }, (response) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve(response);
+      }
+    });
+  });
 }
