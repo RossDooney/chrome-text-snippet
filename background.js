@@ -61,11 +61,29 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
       });
       return true;
     case "update":
-      console.log("update pressed");
-      break;
+      console.log("Snippet code to Update: " ,data.snippet)
+      update_snippet(data.snippet, function(snippet) {
+        if(snippet){
+          const {snippetCode, snippetText} = snippet
+          sendResponse({ snippetCode, snippetText });
+        }else{
+          console.log("Error line 70")
+          sendResponse({ error: "Snippet failed to update" });
+        }
+      });
+      return true;
     case "delete":
-      console.log("delete pressed");
-      break;    
+      console.log("Snippet code to Delete: " ,data.searchString)
+      get_snippets(data.searchString, function(snippet) {
+        if(snippet){
+          const {snippetCode, snippetText} = snippet
+          sendResponse({ snippetCode, snippetText });
+        }else{
+          console.log("Error line 82")
+          sendResponse({ error: "Snippet failed to delete" });
+        }
+      });
+      return true;
     default:
       break;
   }
@@ -207,7 +225,7 @@ function get_snippets(snippetCode, get_callback){
   }
 }
 
-function update_snippe(record){
+function update_snippet(snippet, update_callback){
   if(db){
     const put_transaction = db.transaction("snippets", "readwrite");
     const objectStore = put_transaction.objectStore("snippets");
@@ -220,12 +238,21 @@ function update_snippe(record){
       console.log("Update completed.")
     }
 
-    objectStore.put(record)
+    let request = objectStore.put(snippet)
+  
+    request.onerror = function(){
+      console.log("unable to update snippet");
+    }
+  
+    request.onsuccess = function(event){
+      result = event.target.result
+      update_callback(event.target.result);
+    }
 
   }
 }
 
-function delete_snippe(snippetCode){
+function delete_snippe(snippetCode, delete_callback){
   if(db){
     const delete_transaction = db.transaction("snippets", "readwrite");
     const objectStore = delete_transaction.objectStore("snippets");
@@ -235,10 +262,19 @@ function delete_snippe(snippetCode){
     }
     
     delete_transaction.oncomplete = function(){
-      console.log("Delete  completed.")
+      console.log("Delete completed.")
     }
 
-    objectStore.delete(snippetCode)
+    let request = objectStore.delete(snippetCode)
+  
+    request.onerror = function(){
+      console.log("unable to delete snippet");
+    }
+  
+    request.onsuccess = function(event){
+      result = event.target.result
+      delete_callback(event.target.result);
+    }
   }
 }
 
