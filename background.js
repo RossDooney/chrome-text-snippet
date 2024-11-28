@@ -37,7 +37,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
 chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
   switch(data.event){
     case "insert":
-      console.log("Snippet code to insert: " ,data.snippet)
+      console.log("Snippet code to insert: ", data.snippet)
       insert_snippets(data.snippet, function(snippet) {
         if(snippet){
           const {snippetCode, snippetText} = snippet
@@ -49,7 +49,7 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
       });
       return true;
     case "get":
-      console.log("Snippet code to search: " ,data.searchString)
+      console.log("Snippet code to search: ", data.searchString)
       get_snippets(data.searchString, function(snippet) {
         if(snippet){
           const {snippetCode, snippetText} = snippet
@@ -61,7 +61,7 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
       });
       return true;
     case "update":
-      console.log("Snippet code to Update: " ,data.snippet)
+      console.log("Snippet code to Update: ", data.snippet)
       update_snippet(data.snippet, function(snippet) {
         if(snippet){
           const {snippetCode, snippetText} = snippet
@@ -73,13 +73,13 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
       });
       return true;
     case "delete":
-      console.log("Snippet code to Delete: " ,data.searchString)
-      delete_snippet(data.searchString, function(snippet) {
-        if(snippet){
-          const {snippetCode, snippetText} = snippet
-          sendResponse({ snippetCode, snippetText });
-        }else{
-          console.log("Error line 82")
+      console.log("Snippet code to Delete: ", data.searchString)
+      delete_snippet(data.searchString, function(success) {
+        if(success){
+          console.log("Snippet successfully deleted");
+          sendResponse({ message: "Snippet successfully deleted" });
+        } else {
+          console.log("Error line 82");
           sendResponse({ error: "Snippet failed to delete" });
         }
       });
@@ -190,8 +190,11 @@ function insert_snippets(snippets, insert_callback){
         result = event.target.result
         insert_callback(event.target.result);
       }
-    }   
-
+    }
+  }
+  else {
+    console.log("Database is not initialized");
+    insert_callback(undefined); 
   }
 }
 
@@ -218,10 +221,14 @@ function get_snippets(snippetCode, get_callback){
       if(result){
         get_callback(event.target.result);
       }else{
-        console.log("Not founds, line 184")
+        console.log("Not founds")
         get_callback(undefined)
       }
     }
+  }
+  else {
+    console.log("Database is not initialized");
+    get_callback(undefined)
   }
 }
 
@@ -248,7 +255,10 @@ function update_snippet(snippet, update_callback){
       result = event.target.result
       update_callback(event.target.result);
     }
-
+  }
+  else {
+    console.log("Database is not initialized");
+    update_callback(undefined); 
   }
 }
 
@@ -269,12 +279,17 @@ function delete_snippet(snippetCode, delete_callback){
   
     request.onerror = function(){
       console.log("unable to delete snippet");
+      delete_callback(false);
     }
   
     request.onsuccess = function(event){
-      result = event.target.result
-      delete_callback(event.target.result);
+      console.log("Snippet successfully deleted.");
+      delete_callback(true);
     }
+  }
+  else {
+    console.log("Database is not initialized");
+    delete_callback(false); 
   }
 }
 
