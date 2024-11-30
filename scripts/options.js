@@ -5,15 +5,6 @@ const deleteButton = document.getElementById("delete");
 const snippetCode = document.getElementById("snippetCode");
 const snippetText = document.getElementById("snippetText");
 
-document.querySelector('#go-to-options').addEventListener('click', function() {
-  if (chrome.runtime.openOptionsPage) {
-    chrome.runtime.openOptionsPage();
-  } else {
-    window.open(chrome.runtime.getURL('options.html'));
-  }
-});
-
-
 insertButton.onclick = async function(){
     const snippet = {
         snippetCode: snippetCode.value,

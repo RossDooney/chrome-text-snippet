@@ -4,6 +4,10 @@
     "manifest_version": 3,
     "description": "insert text snippets into text field via hotkeys",
     "permissions": ["storage", "tabs", "activeTab","scripting"],
+    "options_ui": {
+      "page": "options.html",
+      "open_in_tab": false
+    },  
     "background":{
         "service_worker": "./background.js"
     },
