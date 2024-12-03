@@ -1,16 +1,27 @@
 <!DOCTYPE html>
-<html>
+
+<html lang="en">
 <head>
-    <script src="scripts/options.js" defer></script>
+	<meta charset="utf-8">
+	<title data-trl="options">Options</title>
+    <link rel="stylesheet" href="css/options.css"></link>
 </head>
+
 <body>
-    <label>Snippet code: </label>
-    <input type="text" id="snippetCode" name="snippetCode"/>
-    <label>Snippet Text:</label>
-    <textarea type="text" id="snippetText" name="snippetText"></textarea>
-    <button id="insert">Insert</button>
-    <button id="get">Get</button>
-    <button id="update">Update</button>
-    <button id="delete">Delete</button>
+
+<div id="overlay" class="overlay"></div>
+<div class="main">
+		<form class="content">
+		<div id="options" class="options">
+			<h2 data-trl="optionsHeader">Options</h2>
+		</div>
+		<div>
+			<h2>
+				<span data-trl="snippetHeader">Snippets</span>
+			</h2>
+		</div>
+
+	</form>
+</div>
 </body>
 </html>
