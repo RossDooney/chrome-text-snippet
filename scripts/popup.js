@@ -33,6 +33,7 @@ getButton.onclick = async function(){
 
 };
 
+
 updateButton.onclick = async function() {
     const snippet = {
       snippetCode: snippetCode.value,

@@ -1,5 +1,6 @@
 const insertButton = document.getElementById("insert");
 const getButton = document.getElementById("get");
+const getAllButton = document.getElementById("getAll");
 const updateButton = document.getElementById("update");
 const deleteButton = document.getElementById("delete");
 const snippetCode = document.getElementById("snippetCode");
@@ -21,6 +22,18 @@ getButton.onclick = async function(){
     }
     let result = await fetchSnippets(snippet.searchString);
     console.log("Get click reslt: ", result.snippetText)
+
+};
+
+
+getAllButton.onclick = async function(){
+  console.log("Gett all button Clicked")
+  const snippet = {
+      searchString: snippetCode.value,
+      snippetText: snippetText.value
+  }
+  let result = await fetchSnippets(snippet.searchString);
+  console.log("Get click reslt: ", result.snippetText)
 
 };
 

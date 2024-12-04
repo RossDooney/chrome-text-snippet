@@ -50,7 +50,7 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
       return true;
     case "get":
       console.log("Snippet code to search: ", data.searchString)
-      get_snippets(data.searchString, function(snippet) {
+      get_snippet(data.searchString, function(snippet) {
         if(snippet){
           const {snippetCode, snippetText} = snippet
           sendResponse({ snippetCode, snippetText });
@@ -81,6 +81,17 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
         } else {
           console.log("Error line 82");
           sendResponse({ error: "Snippet failed to delete" });
+        }
+      });
+      return true;
+    case "get_all":
+      console.log("Getting all snippets")
+      fetch_all_snippets(function(snippets) {
+        if(snippets){
+          sendResponse(snippets);
+        }else{
+          console.log("Error line 93")
+          sendResponse({ error: "Snippet not found" });
         }
       });
       return true;
@@ -198,7 +209,7 @@ function insert_snippets(snippets, insert_callback){
   }
 }
 
-function get_snippets(snippetCode, get_callback){
+function get_snippet(snippetCode, get_callback){
   if(db){
     const get_transaction = db.transaction("snippets", "readonly");
     const objectStore = get_transaction.objectStore("snippets");
@@ -223,6 +234,40 @@ function get_snippets(snippetCode, get_callback){
       }else{
         console.log("Not founds")
         get_callback(undefined)
+      }
+    }
+  }
+  else {
+    console.log("Database is not initialized");
+    get_callback(undefined)
+  }
+}
+
+function fetch_all_snippets(fetch_all_callback){
+  if(db){
+    const get_transaction = db.transaction("snippets", "readonly");
+    const objectStore = get_transaction.objectStore("snippets");
+    get_transaction.onerror = function(){
+      console.log("There was an error getting records.")
+    }
+    
+    get_transaction.oncomplete = function(){
+      console.log("Get completed.")
+    }
+
+    let request = objectStore.getall();
+
+    request.onerror = function(){
+      console.log("unable to find snippet");
+    }
+
+    request.onsuccess = function(event){
+      result = event.target.result
+      if(result){
+        fetch_all_callback(event.target.result);
+      }else{
+        console.log("Not founds")
+        fetch_all_callback(undefined)
       }
     }
   }
