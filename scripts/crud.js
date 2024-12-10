@@ -1,10 +1,31 @@
 const insertButton = document.getElementById("insert");
 const getButton = document.getElementById("get");
-const getAllButton = document.getElementById("getAll");
 const updateButton = document.getElementById("update");
 const deleteButton = document.getElementById("delete");
+const createDbBtn = document.getElementById("create_db");
+const deleteDbBtn = document.getElementById("delete_db");
 const snippetCode = document.getElementById("snippetCode");
 const snippetText = document.getElementById("snippetText");
+
+document.querySelector('#go-to-options').addEventListener('click', function() {
+  if (chrome.runtime.openOptionsPage) {
+    chrome.runtime.openOptionsPage();
+  } else {
+    window.open(chrome.runtime.getURL('options.html'));
+  }
+});
+
+createDbBtn.onclick = async function(){
+  console.log("asd")
+  let result = await createDatabase();
+  console.log("Create DB click result: ", result)
+};
+
+deleteDbBtn.onclick = async function(){
+  let result = await deleteDatabase();
+  console.log("Delete DB click result: ", result)
+};
+
 
 insertButton.onclick = async function(){
     const snippet = {
@@ -26,13 +47,6 @@ getButton.onclick = async function(){
 };
 
 
-getAllButton.onclick = async function(){
-  console.log("Get all button Clicked")
-  let result = await fetchSnippets();
-  
-  console.log("Get click reslt: ", result.snippetText)
-};
-
 updateButton.onclick = async function() {
     const snippet = {
       snippetCode: snippetCode.value,
@@ -51,9 +65,9 @@ deleteButton.onclick = async function() {
     console.log("Delete click reslt: ", result.snippetText)
 };
 
-async function fetchSnippet(searchString) {
+async function createDatabase() {
   return new Promise((resolve, reject) => {
-    chrome.runtime.sendMessage({ event: "get", searchString }, (response) => {
+    chrome.runtime.sendMessage({ event: "create_db"}, (response) => {
       if (chrome.runtime.lastError) {
         reject(chrome.runtime.lastError);
       } else {
@@ -63,9 +77,21 @@ async function fetchSnippet(searchString) {
   });
 }
 
-async function fetchSnippets() {
+async function deleteDatabase() {
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage({ event: "delete_db"}, (response) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve(response);
+      }
+    });
+  });
+}
+
+async function fetchSnippet(searchString) {
     return new Promise((resolve, reject) => {
-      chrome.runtime.sendMessage({ event: "get_all" }, (response) => {
+      chrome.runtime.sendMessage({ event: "get", searchString }, (response) => {
         if (chrome.runtime.lastError) {
           reject(chrome.runtime.lastError);
         } else {

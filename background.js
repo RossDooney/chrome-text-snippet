@@ -102,11 +102,15 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
       return true;
     case "create_db":
         console.log("Creating DB")
-        create_database();
+        create_database(function(){
+          sendResponse({ message: "DB created"})
+        });
         return true;
     case "delete_db":
         console.log("Deleting the database")
-        delete_database();
+        delete_database(function(){
+          sendResponse({ message: "DB deleted"})
+        });
         return true;
     default:
       break;
@@ -123,20 +127,9 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
 //     }
 // }
 
-
-let snippets_example = [{
-  "snippetCode": "hi",
-  "snippetText": "Hello, thank you for contacting us"
-},
-{
-  "snippetCode": "bye",
-  "snippetText": "best regards"
-},
-]
-
 let db = null
 
-function create_database(){
+function create_database(create_db_callback){
   const request = indexedDB.open('testDB',1);
 
   request.onerror = function(event){
@@ -157,18 +150,13 @@ function create_database(){
 
   request.onsuccess = function(event){
     db = event.target.result;
-
     console.log("DB opened")
-
-    insert_snippets(snippets_example);
-    db.onerror = function(event){
-      console.log("Failed to open DB")
-    }
+    create_db_callback();
   }
   
 }
 
-function delete_database(){
+function delete_database(delete_db_callback){
   const request = indexedDB.deleteDatabase('testDB');
 
   request.onerror = function(event){
@@ -178,6 +166,7 @@ function delete_database(){
   request.onsuccess = function(event){
     db = event.target.result;
     console.log("DB Deleted")
+    delete_db_callback();
   }
 }
 
