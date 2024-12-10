@@ -102,14 +102,24 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
       return true;
     case "create_db":
         console.log("Creating DB")
-        create_database(function(){
-          sendResponse({ message: "DB created"})
+        create_database(function(error){
+          if(error){
+            console.error("Database creation failed:", error);
+          } else {
+            console.log("Database created/opened successfully.");
+            sendResponse({ message: "DB created" });
+          }
         });
         return true;
     case "delete_db":
         console.log("Deleting the database")
-        delete_database(function(){
-          sendResponse({ message: "DB deleted"})
+        delete_database(function(error){
+          if(error){
+            console.error("Database deletion failed:", error);
+          } else {
+            console.log("Database deleted successfully.");
+            sendResponse({ message: "DB deleted" });
+          }
         });
         return true;
     default:
@@ -133,35 +143,49 @@ function create_database(create_db_callback){
   const request = indexedDB.open('testDB',1);
 
   request.onerror = function(event){
-    console.log("unable to open db");
-  }
-
-  request.onupgradeneeded = function(event){
-    db = event.target.result;
-    let objectStore = db.createObjectStore('snippets', {
-      keyPath: "snippetCode"
-    });
-
-
-    objectStore.transaction.oncomplete = function(event){
-      console.log("Object store created");
+    console.log("unable to open db", event.target.error);
+    if(create_db_callback){
+      create_db_callback(new Error("Database open failed"));
     }
   }
 
-  request.onsuccess = function(event){
+  request.onupgradeneeded = function(event){
+
     db = event.target.result;
-    console.log("DB opened")
-    create_db_callback();
-  }
-  
+
+    if (!db.objectStoreNames.contains('snippets')) {
+      const objectStore = db.createObjectStore('snippets', { keyPath: "snippetCode" });
+      objectStore.transaction.oncomplete = function () {
+        console.log("Object store 'snippets' created successfully.");
+      };
+
+      objectStore.transaction.onerror = function (event) {
+        console.error("Failed to create object store:", event.target.error);
+      };
+    } else {
+      console.log("Object store 'snippets' already exists.");
+    }
+  };
+  request.onsuccess = function (event) {
+    db = event.target.result;
+    console.log("Database opened successfully.");
+    if (create_db_callback) {
+      create_db_callback(null, event.target.result); 
+    }
+  };
 }
 
 function delete_database(delete_db_callback){
+  db.close();
   const request = indexedDB.deleteDatabase('testDB');
 
-  request.onerror = function(event){
-    console.log("unable to open db")
+  request.onerror = function(){
+    create_db_callback(new Error("Database failed to delete"));
   }
+
+  request.onblocked = function () {
+    create_db_callback(new Error("Database failed to delete, ensure all connections are closed"));
+  };
 
   request.onsuccess = function(event){
     db = event.target.result;
