@@ -100,6 +100,14 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
         }
       });
       return true;
+    case "create_db":
+        console.log("Creating DB")
+        create_database();
+        return true;
+    case "delete_db":
+        console.log("Deleting the database")
+        delete_database();
+        return true;
     default:
       break;
   }
@@ -341,6 +349,3 @@ function delete_snippet(snippetCode, delete_callback){
     delete_callback(false); 
   }
 }
-
-delete_database();
-create_database();
