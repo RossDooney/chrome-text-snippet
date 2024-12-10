@@ -24,7 +24,7 @@ document.addEventListener('keydown', async function(event) {
     if(currentKey.charCodeAt(0) === 69 && insertSearch){
 
         searchString = activeElement.value.slice((searchStartPoint + 1), (searchStartPoint + searchLength + 1))
-        let x = await fetchSnippets(searchString);  
+        let x = await fetchSnippet(searchString);  
         if(x.snippetText){
             const insertEnd = searchStartPoint + searchString.length + 1;
             activeElement.setRangeText(x.snippetText, searchStartPoint, insertEnd, 'select');
@@ -64,7 +64,7 @@ function resetSearch() {
     searchString = "";
     searchLength = 0
 }
-async function fetchSnippets(searchString) {
+async function fetchSnippet(searchString) {
     return new Promise((resolve, reject) => {
       chrome.runtime.sendMessage({ event: "get", searchString }, (response) => {
         if (chrome.runtime.lastError) {

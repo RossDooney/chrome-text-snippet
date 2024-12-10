@@ -1,24 +1,29 @@
-chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete") {
-      chrome.scripting.executeScript({
-          target: { tabId: tabId },
-          func: () => !!window.isScriptInjected
-      }).then((results) => {
-          if (results[0].result) {
-              console.log("content.js already injected");
-              return;
-          }
-          chrome.scripting.executeScript({
-              target: { tabId: tabId },
-              files: ["./scripts/content.js"]
-          }).then(() => {
-              chrome.scripting.executeScript({
-                  target: { tabId: tabId },
-                  func: () => { window.isScriptInjected = true; }
-              });
-              console.log("content script injected");
-          }).catch(err => console.log(err, "error injecting script"));
-      }).catch(err => console.log(err, "error checking script"));
+
+    if (tab.url && tab.url.startsWith("chrome-extension://")) {
+      console.log("Skipping Chrome extension page:", tab.url);
+      return;
+    }
+    chrome.scripting.executeScript({
+        target: { tabId: tabId },
+        func: () => !!window.isScriptInjected
+    }).then((results) => {
+        if (results[0].result) {
+            console.log("content.js already injected");
+            return;
+        }
+        chrome.scripting.executeScript({
+            target: { tabId: tabId },
+            files: ["./scripts/content.js"]
+        }).then(() => {
+            chrome.scripting.executeScript({
+                target: { tabId: tabId },
+                func: () => { window.isScriptInjected = true; }
+            });
+            console.log("content script injected");
+        }).catch(err => console.log(err, "error injecting script"));
+    }).catch(err => console.log(err, "error checking script"));
   }
 });
 
@@ -255,12 +260,11 @@ function fetch_all_snippets(fetch_all_callback){
       console.log("Get completed.")
     }
 
-    let request = objectStore.getall();
+    let request = objectStore.getAll();
 
     request.onerror = function(){
       console.log("unable to find snippet");
     }
-
     request.onsuccess = function(event){
       result = event.target.result
       if(result){

@@ -5,7 +5,7 @@
 	<meta charset="utf-8">
 	<title data-trl="options">Options</title>
     <link rel="stylesheet" href="css/options.css"></link>
-	<script src="scripts/popup.js" defer></script>
+	<script src="scripts/options.js" defer></script>
 </head>
 <body>
 <div class="main">
@@ -17,7 +17,15 @@
 			<h2>
 				<span data-trl="snippetHeader">Snippets</span>
 			</h2>
-			<button id="get-all">Get All</button>
+			<button id="getAll">Get All</button><br/>
+			<label>Snippet code: </label>
+			<input type="text" id="snippetCode" name="snippetCode"/><br/>
+			<label>Snippet Text:</label>
+			<textarea type="text" id="snippetText" name="snippetText"></textarea><br/>
+			<button id="insert">Insert</button><br/>
+			<button id="get">Get</button><br/>
+			<button id="update">Update</button><br/>
+			<button id="delete">Delete</button><br/>
 		</div>
 
 	</form>
