@@ -16,7 +16,6 @@ document.querySelector('#go-to-options').addEventListener('click', function() {
 });
 
 createDbBtn.onclick = async function(){
-  console.log("asd")
   let result = await createDatabase();
   console.log("Create DB click result: ", result)
 };

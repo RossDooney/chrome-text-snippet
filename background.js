@@ -219,13 +219,12 @@ function insert_snippets(snippets, insert_callback){
     else{
       let request = objectStore.add(snippets)
   
-      request.onerror = function(){
-        console.log("unable to add snippet");
+      request.onerror = function(event){
+        console.log("unable to add snippet: ", event.target.error);
       }
   
-      request.onsuccess = function(event){
-        result = event.target.result
-        insert_callback(event.target.result);
+      request.onsuccess = function(){
+        insert_callback();
       }
     }
   }
