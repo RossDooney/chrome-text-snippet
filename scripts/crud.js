@@ -6,6 +6,7 @@ const createDbBtn = document.getElementById("create_db");
 const deleteDbBtn = document.getElementById("delete_db");
 const snippetCode = document.getElementById("snippetCode");
 const snippetText = document.getElementById("snippetText");
+const getAllBtn = document.getElementById("getAll");
 
 document.querySelector('#go-to-options').addEventListener('click', function() {
   if (chrome.runtime.openOptionsPage) {
@@ -45,6 +46,11 @@ getButton.onclick = async function(){
 
 };
 
+getAllBtn.onclick = async function(){
+  let result = await fetchAllSnippets();
+  console.log("Get click reslt: ", result)
+
+};
 
 updateButton.onclick = async function() {
     const snippet = {
@@ -98,6 +104,18 @@ async function fetchSnippet(searchString) {
         }
       });
     });
+}
+
+async function fetchAllSnippets() {
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage({ event: "get_all"}, (response) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve(response);
+      }
+    });
+  });
 }
 
 async function insertSnippets(snippet) {
