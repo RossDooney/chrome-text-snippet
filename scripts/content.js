@@ -1,5 +1,3 @@
-console.log("content script running");
-
 let insertSearch = false
 let searchString = ""
 let statSearchKey = 92

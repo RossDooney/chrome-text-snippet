@@ -175,6 +175,18 @@ function create_database(create_db_callback){
   };
 }
 
+function open_db(){
+  const request = indexedDB.open('testDB',1);
+  request.onerror = function(event){
+    console.log("unable to open db", event.target.error);
+  }
+
+  request.onsuccess = function (event) {
+    db = event.target.result;
+    console.log("Database opened successfully.");
+  };
+}
+
 function delete_database(delete_db_callback){
   db.close();
   const request = indexedDB.deleteDatabase('testDB');
