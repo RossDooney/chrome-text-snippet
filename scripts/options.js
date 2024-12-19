@@ -3,8 +3,12 @@ const loadBtn = document.getElementById("loadMore");
 
 loadBtn.onclick = async function(){
     let result = await fetchAllSnippets();
-    console.log("Load more click reslt: ", result[0].snippetCode)
-    snippet_list.appendChild(createSnippetCard(result[0].snippetCode, result[0].snippetText));
+    result.forEach(snippet => {
+      console.log("Snippet: ", snippet)
+      snippet_list.appendChild(createSnippetCard(snippet.snippetCode, snippet.snippetText));
+
+    })
+
   
 };
 
@@ -21,20 +25,31 @@ async function fetchAllSnippets() {
 }
 
 
-function createSnippetCard(title, description) {
+function createSnippetCard(snippetCode, snippetText) {
     const card = document.createElement("div");
-    card.style.border = "1px solid #ccc";
-    card.style.margin = "10px";
-    card.style.padding = "10px";
+    card.setAttribute('data-id', snippetCode);
+    card.setAttribute('class', 'snippetCard')
 
-    const titleElement = document.createElement("h2");
-    titleElement.textContent = title;
+    const snipCodeElement = document.createElement("h2");
+    snipCodeElement.setAttribute('class', 'snipCode')
+    snipCodeElement.textContent = snippetCode;
 
-    const descriptionElement = document.createElement("p");
-    descriptionElement.textContent = description;
+    const snipTextElement = document.createElement("p");
+    snipTextElement.setAttribute('class', 'snipText')
+    snipTextElement.textContent = snippetText;
 
-    card.appendChild(titleElement);
-    card.appendChild(descriptionElement);
+    const snipDeleteElement = document.createElement("button")
+    snipDeleteElement.setAttribute('class', 'snipDelete')
+    snipDeleteElement.textContent = "Delete"
+
+    const snipEditElement = document.createElement("button")
+    snipEditElement.setAttribute('class', 'editDelete')
+    snipEditElement.textContent = "Edit"
+
+    card.appendChild(snipCodeElement);
+    card.appendChild(snipTextElement);
+    card.appendChild(snipDeleteElement);
+    card.appendChild(snipEditElement);
 
     return card;
 }
