@@ -26,17 +26,32 @@ async function fetchAllSnippets() {
 
 
 function createSnippetCard(snippetCode, snippetText) {
-    const card = document.createElement("div");
-    card.setAttribute('data-id', snippetCode);
-    card.setAttribute('class', 'snippetCard')
+    const tableRow = document.createElement("tr");
+    tableRow.setAttribute('data-id', snippetCode);
+    tableRow.setAttribute('class', 'snippetCard')
 
-    const snipCodeElement = document.createElement("h2");
+    const snipCodeElement = document.createElement("td");
     snipCodeElement.setAttribute('class', 'snipCode')
     snipCodeElement.textContent = snippetCode;
 
-    const snipTextElement = document.createElement("p");
+    const snipTextElement = document.createElement("td");
     snipTextElement.setAttribute('class', 'snipText')
     snipTextElement.textContent = snippetText;
+
+    const snipLastUpdate = document.createElement("td");
+    snipLastUpdate.setAttribute('class', 'sniplastUpdate')
+    snipLastUpdate.textContent = "Place Holder";
+
+    const snipLastUsed = document.createElement("td");
+    snipLastUsed.setAttribute('class', 'sniplastUsed')
+    snipLastUsed.textContent = "Place Holder";
+
+    const snipTimesUsed = document.createElement("td");
+    snipTimesUsed.setAttribute('class', 'snipTimeUsed')
+    snipTimesUsed.textContent = "Place Holder";
+
+    const snipOptions = document.createElement("td");
+    snipOptions.setAttribute('class', 'snipOption')
 
     const snipDeleteElement = document.createElement("button")
     snipDeleteElement.setAttribute('class', 'snipDelete')
@@ -46,10 +61,16 @@ function createSnippetCard(snippetCode, snippetText) {
     snipEditElement.setAttribute('class', 'editDelete')
     snipEditElement.textContent = "Edit"
 
-    card.appendChild(snipCodeElement);
-    card.appendChild(snipTextElement);
-    card.appendChild(snipDeleteElement);
-    card.appendChild(snipEditElement);
+    snipOptions.appendChild(snipDeleteElement)
+    snipOptions.appendChild(snipEditElement)
 
-    return card;
+    tableRow.appendChild(snipCodeElement);
+    tableRow.appendChild(snipTextElement);
+    tableRow.appendChild(snipLastUpdate);
+    tableRow.appendChild(snipLastUsed);
+    tableRow.appendChild(snipTimesUsed);
+    tableRow.appendChild(snipOptions);
+
+
+    return tableRow;
 }
