@@ -1,29 +1,50 @@
 const snippet_list = document.getElementById("snippet_list")
 const loadBtn = document.getElementById("loadMore");
 
-loadBtn.onclick = async function(){
-    let result = await fetchAllSnippets();
-    result.forEach(snippet => {
-      console.log("Snippet: ", snippet)
-      snippet_list.appendChild(createSnippetRow(snippet.snippetCode, snippet.snippetText));
+loadSnippets();
 
-    })
+async function loadSnippets(){
+  await openDb();
+  let result = await fetchAllSnippets();
+  result.forEach(snippet => {
+    console.log("Snippet: ", snippet)
+    snippet_list.appendChild(createSnippetRow(snippet.snippetCode, snippet.snippetText));
 
-  
-};
-
-async function fetchAllSnippets() {
-    return new Promise((resolve, reject) => {
-      chrome.runtime.sendMessage({ event: "get_all"}, (response) => {
-        if (chrome.runtime.lastError) {
-          reject(chrome.runtime.lastError);
-        } else {
-          resolve(response);
-        }
-      });
-    });
+  })
 }
 
+loadBtn.onclick = async function(){
+  let result = await fetchAllSnippets();
+  result.forEach(snippet => {
+    console.log("Snippet: ", snippet)
+    snippet_list.appendChild(createSnippetRow(snippet.snippetCode, snippet.snippetText));
+
+  })
+};
+
+async function openDb(){
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage({ event: "open_db"}, (response) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve(response);
+      }
+    });
+  });
+}
+
+async function fetchAllSnippets() {
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage({ event: "get_all"}, (response) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve(response);
+      }
+    });
+  });
+}
 
 function createSnippetRow(snippetCode, snippetText) {
   const createCell = (className, textContent = "") => {
@@ -53,7 +74,7 @@ function createSnippetRow(snippetCode, snippetText) {
   const snipOptions = createCell("snipOption");
 
   snipOptions.appendChild(createButton("snipDelete", "Delete"))
-  snipOptions.appendChild(createButton("snipEdit", "Edit1"))
+  snipOptions.appendChild(createButton("snipEdit", "Edit"))
 
   tableRow.appendChild(snipOptions);
 

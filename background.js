@@ -27,7 +27,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   }
 });
 
-
 // chrome.commands.onCommand.addListener((command) => {
 //     if (command === "insert_snippet") {
 //       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -41,6 +40,17 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 
 chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
   switch(data.event){
+    case "open_db":
+      console.log("Opening DB Connection")
+      open_db(function(error){
+        if(error){
+          console.error("Database failed to open:", error);
+        } else {
+          console.log("Database opened successfully.");
+          sendResponse({ message: "DB connection opened" });
+        }
+      });
+      return true;
     case "insert":
       console.log("Snippet code to insert: ", data.snippet)
       insert_snippets(data.snippet, function(snippet) {
@@ -175,15 +185,15 @@ function create_database(create_db_callback){
   };
 }
 
-function open_db(){
+function open_db(open_db_callback){
   const request = indexedDB.open('testDB',1);
   request.onerror = function(event){
-    console.log("unable to open db", event.target.error);
+    open_db_callback(new Error("Database failed to open: ", event.target.error))
   }
 
   request.onsuccess = function (event) {
     db = event.target.result;
-    console.log("Database opened successfully.");
+    open_db_callback();
   };
 }
 
@@ -192,11 +202,11 @@ function delete_database(delete_db_callback){
   const request = indexedDB.deleteDatabase('testDB');
 
   request.onerror = function(){
-    create_db_callback(new Error("Database failed to delete"));
+    delete_db_callback(new Error("Database failed to delete"));
   }
 
   request.onblocked = function () {
-    create_db_callback(new Error("Database failed to delete, ensure all connections are closed"));
+    delete_db_callback(new Error("Database failed to delete, ensure all connections are closed"));
   };
 
   request.onsuccess = function(event){
