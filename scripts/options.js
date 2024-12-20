@@ -5,7 +5,7 @@ loadBtn.onclick = async function(){
     let result = await fetchAllSnippets();
     result.forEach(snippet => {
       console.log("Snippet: ", snippet)
-      snippet_list.appendChild(createSnippetCard(snippet.snippetCode, snippet.snippetText));
+      snippet_list.appendChild(createSnippetRow(snippet.snippetCode, snippet.snippetText));
 
     })
 
@@ -25,52 +25,37 @@ async function fetchAllSnippets() {
 }
 
 
-function createSnippetCard(snippetCode, snippetText) {
-    const tableRow = document.createElement("tr");
-    tableRow.setAttribute('data-id', snippetCode);
-    tableRow.setAttribute('class', 'snippetCard')
+function createSnippetRow(snippetCode, snippetText) {
+  const createCell = (className, textContent = "") => {
+    const cell = document.createElement("td");
+    cell.setAttribute("class", className);
+    cell.textContent = textContent;
+    return cell;
+  };
 
-    const snipCodeElement = document.createElement("td");
-    snipCodeElement.setAttribute('class', 'snipCode')
-    snipCodeElement.textContent = snippetCode;
+  const createButton = (className, textContent) => {
+    const button = document.createElement("button");
+    button.setAttribute("class", className);
+    button.textContent = textContent;
+    return button;
+  };
 
-    const snipTextElement = document.createElement("td");
-    snipTextElement.setAttribute('class', 'snipText')
-    snipTextElement.textContent = snippetText;
+  const tableRow = document.createElement("tr");
+  tableRow.setAttribute('data-id', snippetCode);
+  tableRow.setAttribute('class', 'snippetRow')
 
-    const snipLastUpdate = document.createElement("td");
-    snipLastUpdate.setAttribute('class', 'sniplastUpdate')
-    snipLastUpdate.textContent = "Place Holder";
+  tableRow.appendChild(createCell("snipCode", snippetCode));
+  tableRow.appendChild(createCell("snipText", snippetText));
+  tableRow.appendChild(createCell("sniplastUpdate", "Place Holder"));
+  tableRow.appendChild(createCell("sniplastUsed", "Place Holder"));
+  tableRow.appendChild(createCell("snipTimeUsed", "Place Holder"));
 
-    const snipLastUsed = document.createElement("td");
-    snipLastUsed.setAttribute('class', 'sniplastUsed')
-    snipLastUsed.textContent = "Place Holder";
+  const snipOptions = createCell("snipOption");
 
-    const snipTimesUsed = document.createElement("td");
-    snipTimesUsed.setAttribute('class', 'snipTimeUsed')
-    snipTimesUsed.textContent = "Place Holder";
+  snipOptions.appendChild(createButton("snipDelete", "Delete"))
+  snipOptions.appendChild(createButton("snipEdit", "Edit1"))
 
-    const snipOptions = document.createElement("td");
-    snipOptions.setAttribute('class', 'snipOption')
+  tableRow.appendChild(snipOptions);
 
-    const snipDeleteElement = document.createElement("button")
-    snipDeleteElement.setAttribute('class', 'snipDelete')
-    snipDeleteElement.textContent = "Delete"
-
-    const snipEditElement = document.createElement("button")
-    snipEditElement.setAttribute('class', 'editDelete')
-    snipEditElement.textContent = "Edit"
-
-    snipOptions.appendChild(snipDeleteElement)
-    snipOptions.appendChild(snipEditElement)
-
-    tableRow.appendChild(snipCodeElement);
-    tableRow.appendChild(snipTextElement);
-    tableRow.appendChild(snipLastUpdate);
-    tableRow.appendChild(snipLastUsed);
-    tableRow.appendChild(snipTimesUsed);
-    tableRow.appendChild(snipOptions);
-
-
-    return tableRow;
+  return tableRow;
 }
