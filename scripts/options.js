@@ -1,5 +1,5 @@
 const snippet_list = document.getElementById("snippet_list")
-const loadBtn = document.getElementById("loadMore");
+
 
 loadSnippets();
 
@@ -12,6 +12,32 @@ async function loadSnippets(){
 
   })
 }
+
+document.addEventListener("click", async function (event) {
+  const btnId = event.target.className;
+
+  switch(btnId){
+    case "loadMore":
+      let result = await fetchAllSnippets();
+      result.forEach(snippet => {
+        console.log("Snippet: ", snippet)
+        snippet_list.appendChild(createSnippetRow(snippet.snippetCode, snippet.snippetText));    
+      });
+      return true;
+    case "snipDelete":
+      console.log("A delete button was clicked");
+      return true;
+    case "snipEdit":
+      console.log("A Edit button was clicked");
+      return true;
+    default:
+      break;
+  }
+
+
+});
+
+
 
 loadBtn.onclick = async function(){
   let result = await fetchAllSnippets();
