@@ -25,7 +25,15 @@ document.addEventListener("click", async function (event) {
       });
       return true;
     case "snipDelete":
-      console.log("A delete button was clicked");
+      const parentRow = event.target.closest("tr"); 
+      if(parentRow){
+        const snipId = parentRow.getAttribute("data-id")
+        let result = await deleteSnippet(snipId);
+        console.log("Delete click result: ", result.snippetText)
+      }
+      else{
+        console.log("Cannot find parent TR")
+      }
       return true;
     case "snipEdit":
       console.log("A Edit button was clicked");
@@ -33,8 +41,6 @@ document.addEventListener("click", async function (event) {
     default:
       break;
   }
-
-
 });
 
 

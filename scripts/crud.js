@@ -67,7 +67,7 @@ deleteButton.onclick = async function() {
      snippetText: snippetText.value
     }
     let result = await deleteSnippet(snippet.searchString);
-    console.log("Delete click reslt: ", result.snippetText)
+    console.log("Delete click result: ", result.snippetText)
 };
 
 async function createDatabase() {
