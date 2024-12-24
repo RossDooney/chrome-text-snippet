@@ -1,6 +1,5 @@
 const snippet_list = document.getElementById("snippet_list")
 
-
 loadSnippets();
 
 async function loadSnippets(){
