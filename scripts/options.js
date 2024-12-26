@@ -1,4 +1,4 @@
-const snippet_list = document.getElementById("snippet_list")
+const snippet_list = document.getElementById("snippetList")
 
 loadSnippets();
 

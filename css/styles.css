@@ -23,3 +23,55 @@
 .button_cont button:hover{
     box-shadow: 1px 0px 10p #eee;
 }
+
+.snippetModal{
+    position: fixed;
+    top:50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border: 1px solid white;
+    border-radius: 10px;
+    z-index: 10;
+    background-color: #23222B;
+    color: #FFFFFF;
+    width: 500px;
+    max-width: 80%;
+}
+
+.modalHeader{
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid white;
+}
+
+.modalHeader h2{
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.modalHeader .closeButton{
+    cursor: pointer;
+    border: none;
+    outline: none;
+    background: none;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #FFFFFF;
+}
+
+.modalBody{
+    padding: 10px 15px;
+}
+
+#overlay{
+    position: fixed;
+    opacity: 0;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: (0,0,0.5);
+    pointer-events: none;
+}
