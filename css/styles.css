@@ -28,7 +28,8 @@
     position: fixed;
     top:50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) scale(0);
+    transition: 200ms ease-in-out;
     border: 1px solid white;
     border-radius: 10px;
     z-index: 10;
@@ -36,6 +37,10 @@
     color: #FFFFFF;
     width: 500px;
     max-width: 80%;
+}
+
+.snippetModal.active{
+    transform: translate(-50%, -50%) scale(1);
 }
 
 .modalHeader{
@@ -51,7 +56,7 @@
     font-weight: bold;
 }
 
-.modalHeader .closeButton{
+.modalHeader .closeModalBtn{
     cursor: pointer;
     border: none;
     outline: none;
@@ -68,10 +73,16 @@
 #overlay{
     position: fixed;
     opacity: 0;
+    transition: 200ms;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
     background-color: (0,0,0.5);
     pointer-events: none;
+}
+
+#overlay.active{
+    opacity: 1;
+    pointer-events: all;
 }

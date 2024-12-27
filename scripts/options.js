@@ -1,4 +1,5 @@
-const snippet_list = document.getElementById("snippetList")
+const snippetList = document.getElementById("snippetList")
+const overLay = document.getElementById("overlay")
 
 loadSnippets();
 
@@ -7,20 +8,36 @@ async function loadSnippets(){
   let result = await fetchAllSnippets();
   result.forEach(snippet => {
     console.log("Snippet: ", snippet)
-    snippet_list.appendChild(createSnippetRow(snippet.snippetCode, snippet.snippetText));
+    snippetList.appendChild(createSnippetRow(snippet.snippetCode, snippet.snippetText));
 
   })
 }
 
+overLay.addEventListener('click', ()=>{
+  const modals = document.querySelectorAll('.snippetModal.active')
+  modals.forEach(modal => {
+    closeModal(modal)
+  })
+})
+
 document.addEventListener("click", async function (event) {
   const btnId = event.target.className;
+  
 
   switch(btnId){
+    case "createBtn":
+      const modal = document.querySelector(event.target.dataset.modalTarget);
+      await createSnippet(modal);
+      return true;
+    case "closeModalBtn":
+      const parentModal = event.target.closest('.snippetModal')
+      closeModal(parentModal);
+      return true;
     case "loadMore":
       let result = await fetchAllSnippets();
       result.forEach(snippet => {
         console.log("Snippet: ", snippet)
-        snippet_list.appendChild(createSnippetRow(snippet.snippetCode, snippet.snippetText));    
+        snippetList.appendChild(createSnippetRow(snippet.snippetCode, snippet.snippetText));    
       });
       return true;
     case "snipDelete":
@@ -48,7 +65,7 @@ loadBtn.onclick = async function(){
   let result = await fetchAllSnippets();
   result.forEach(snippet => {
     console.log("Snippet: ", snippet)
-    snippet_list.appendChild(createSnippetRow(snippet.snippetCode, snippet.snippetText));
+    snippetList.appendChild(createSnippetRow(snippet.snippetCode, snippet.snippetText));
 
   })
 };
@@ -63,6 +80,20 @@ async function openDb(){
       }
     });
   });
+}
+
+async function createSnippet(modal) {
+  if (!modal) return
+
+  modal.classList.add('active')
+  overLay.classList.add('active')
+}
+
+function closeModal(modal) {
+  if (!modal) return;
+
+  modal.classList.remove('active');
+  overLay.classList.remove('active');
 }
 
 async function fetchAllSnippets() {
