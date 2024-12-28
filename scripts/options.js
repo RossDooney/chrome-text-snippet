@@ -119,70 +119,57 @@ function createSnippetRow(snippetCode, snippetText) {
     return cell;
   };
 
-  const createButton = (className, textContent) => {
-    const button = document.createElement("button");
-    button.setAttribute("class", className);
-    button.textContent = textContent;
-    return button;
-  };
-
   const tableRow = document.createElement("tr");
   tableRow.setAttribute('data-id', snippetCode);
   tableRow.setAttribute('class', 'snippetRow')
 
-  tableRow.appendChild(createCell("snipCode", snippetCode));
-  tableRow.appendChild(createCell("snipText", snippetText));
-  tableRow.appendChild(createCell("sniplastUpdate", "Place Holder"));
-  tableRow.appendChild(createCell("sniplastUsed", "Place Holder"));
-  tableRow.appendChild(createCell("snipTimeUsed", "Place Holder"));
+  tableRow.appendChild(createEle("td", {class: "snipCode"}, snippetCode));
+  tableRow.appendChild(createEle("td", {class: "snipText"}, snippetText));
+  tableRow.appendChild(createEle("td", {class: "sniplastUpdate"}, "Place Holder"));
+  tableRow.appendChild(createEle("td", {class: "sniplastUsed"}, "Place Holder"));
+  tableRow.appendChild(createEle("td", {class: "snipTimeUsed"}, "Place Holder"));
 
-  const snipOptions = createCell("snipOption");
+  const snipOptions = createEle("td", {class: "snipOption"});
 
-  snipOptions.appendChild(createButton("snipDelete", "Delete"))
-  snipOptions.appendChild(createButton("snipEdit", "Edit"))
+  snipOptions.appendChild(createBtn("snipDelete", "Delete"))
+  snipOptions.appendChild(createBtn("snipEdit", "Edit"))
 
   tableRow.appendChild(snipOptions);
 
   return tableRow;
 }
 
-function createModal(){
-  const createDiv = (className, Id = "") =>{
-    const div = document.createElement("div");
-    div.setAttribute("class", className)
-    if(Id) div.setAttribute("id", Id);
-    return div;
-  };
-
-  const createElement = (elementType, elementClass = "", elementId = "", elementText = "") =>{
-    const element = document.createElement(elementType);
-    if(elementClass) element.setAttribute("class", elementClass);
-    if(elementId) element.setAttribute("id", elementId);
-    if(elementText) element.textContent = elementText;
-    return element
-  };
-
-  const createButton = (className, textContent) => {
-    const button = document.createElement("button");
-    button.setAttribute("class", className);
-    button.textContent = textContent;
-    return button;
-  };
-
+function createModal(){ 
+  const parentDiv = createEle("div", {class: "snippetModal", id: "snippetModal"});
+  const modalHeader = createEle("div", {class: "modalHeader"});
+  const modalBody = createEle("div", {class: "modalBody"});
   
-  const parentDiv = createDiv("snippetModal", "snippetModal");
-  const modalHeader = createDiv("modalHeader");
-  const modalBody = createDiv("modalBody");
-  
-  modalHeader.appendChild(createElement("h2", "", "", "Create Snippet"))
-  modalHeader.appendChild(createButton("closeModalBtn", "&times;"))
+  modalHeader.appendChild(createEle("h2", "","Create Snippet"))
+  modalHeader.appendChild(createBtn("closeModalBtn", "&times;"))
   
   parentDiv.appendChild(modalHeader);
   
-  parentDiv.appendChild(createDiv("modalBody"));
+  parentDiv.appendChild(createEle("div", {class: "modalBody"}));
 
   return parentDiv;
 }
+
+function createEle(elementType, attributes = {}, elementText = ""){
+  const element = document.createElement(elementType);
+  Object.entries(attributes).forEach(([key, value]) => {
+    element.setAttribute(key, value)
+  })
+  if(elementText) element.textContent = elementText;
+  return element;
+}
+
+function createBtn(className, textContent){
+  const button = document.createElement("button");
+  button.setAttribute("class", className);
+  button.textContent = textContent;
+  return button;
+}
+
 
 
 {/* <div class="snippetModal" id="snippetModal">
