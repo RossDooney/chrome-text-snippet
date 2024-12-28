@@ -26,7 +26,6 @@ overLay.addEventListener('click', ()=>{
 document.addEventListener("click", async function (event) {
   const btnId = event.target.className;
   
-
   switch(btnId){
     case "createBtn":
       const modal = document.querySelector(event.target.dataset.modalTarget);
@@ -44,34 +43,31 @@ document.addEventListener("click", async function (event) {
       });
       return true;
     case "snipDelete":
+    case "snipEdit":
       const parentRow = event.target.closest("tr"); 
       if(parentRow){
         const snipId = parentRow.getAttribute("data-id")
-        let result = await deleteSnippet(snipId);
-        console.log("Delete click result: ", result.snippetText)
+        if(btnId == "snipDelete") {
+          let result = await deleteSnippet(snipId);
+          console.log("Delete click result: ", result.snippetText)
+          return true;
+        }
+        else{
+          console.log("Editing: ", snipId)
+          return true;
+        }
       }
       else{
         console.log("Cannot find parent TR")
       }
       return true;
-    case "snipEdit":
-      console.log("A Edit button was clicked");
-      return true;
+
     default:
+      console.warn(`Unhandled button action: ${btnId}`);
       break;
   }
 });
 
-
-
-loadBtn.onclick = async function(){
-  let result = await fetchAllSnippets();
-  result.forEach(snippet => {
-    console.log("Snippet: ", snippet)
-    snippetList.appendChild(createSnippetRow(snippet.snippetCode, snippet.snippetText));
-
-  })
-};
 
 async function openDb(){
   return new Promise((resolve, reject) => {
@@ -112,13 +108,6 @@ async function fetchAllSnippets() {
 }
 
 function createSnippetRow(snippetCode, snippetText) {
-  const createCell = (className, textContent = "") => {
-    const cell = document.createElement("td");
-    cell.setAttribute("class", className);
-    cell.textContent = textContent;
-    return cell;
-  };
-
   const tableRow = document.createElement("tr");
   tableRow.setAttribute('data-id', snippetCode);
   tableRow.setAttribute('class', 'snippetRow')
@@ -131,8 +120,8 @@ function createSnippetRow(snippetCode, snippetText) {
 
   const snipOptions = createEle("td", {class: "snipOption"});
 
-  snipOptions.appendChild(createBtn("snipDelete", "Delete"))
-  snipOptions.appendChild(createBtn("snipEdit", "Edit"))
+  snipOptions.appendChild(createEle("button", {class: "snipDelete"}, "Delete"))
+  snipOptions.appendChild(createEle("button", {class: "snipEdit"}, "Edit"))
 
   tableRow.appendChild(snipOptions);
 
@@ -145,11 +134,15 @@ function createModal(){
   const modalBody = createEle("div", {class: "modalBody"});
   
   modalHeader.appendChild(createEle("h2", "","Create Snippet"))
-  modalHeader.appendChild(createBtn("closeModalBtn", "&times;"))
-  
+  modalHeader.appendChild(createEle("button", {class: "closeModalBtn"}, "\u00D7"))
   parentDiv.appendChild(modalHeader);
   
-  parentDiv.appendChild(createEle("div", {class: "modalBody"}));
+  modalBody.appendChild(createEle("h3", "", "Snippet name"))
+  modalBody.appendChild(createEle("input", {type: "text", placeholder: "hi"}))
+  modalBody.appendChild(createEle("h3", "", "Snippet Content"))
+  modalBody.appendChild(createEle("textarea"))
+  modalBody.appendChild(createBtn("", "Save"))
+  parentDiv.appendChild(modalBody);
 
   return parentDiv;
 }
