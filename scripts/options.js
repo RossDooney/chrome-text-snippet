@@ -1,7 +1,9 @@
 const snippetList = document.getElementById("snippetList")
 const overLay = document.getElementById("overlay")
+const modalDiv = document.getElementById("modalDiv")
 
 loadSnippets();
+modalDiv.appendChild(createModal());
 
 async function loadSnippets(){
   await openDb();
@@ -11,6 +13,7 @@ async function loadSnippets(){
     snippetList.appendChild(createSnippetRow(snippet.snippetCode, snippet.snippetText));
 
   })
+  return;
 }
 
 overLay.addEventListener('click', ()=>{
@@ -142,3 +145,55 @@ function createSnippetRow(snippetCode, snippetText) {
 
   return tableRow;
 }
+
+function createModal(){
+  const createDiv = (className, Id = "") =>{
+    const div = document.createElement("div");
+    div.setAttribute("class", className)
+    if(Id) div.setAttribute("id", Id);
+    return div;
+  };
+
+  const createElement = (elementType, elementClass = "", elementId = "", elementText = "") =>{
+    const element = document.createElement(elementType);
+    if(elementClass) element.setAttribute("class", elementClass);
+    if(elementId) element.setAttribute("id", elementId);
+    if(elementText) element.textContent = elementText;
+    return element
+  };
+
+  const createButton = (className, textContent) => {
+    const button = document.createElement("button");
+    button.setAttribute("class", className);
+    button.textContent = textContent;
+    return button;
+  };
+
+  
+  const parentDiv = createDiv("snippetModal", "snippetModal");
+  const modalHeader = createDiv("modalHeader");
+  const modalBody = createDiv("modalBody");
+  
+  modalHeader.appendChild(createElement("h2", "", "", "Create Snippet"))
+  modalHeader.appendChild(createButton("closeModalBtn", "&times;"))
+  
+  parentDiv.appendChild(modalHeader);
+  
+  parentDiv.appendChild(createDiv("modalBody"));
+
+  return parentDiv;
+}
+
+
+{/* <div class="snippetModal" id="snippetModal">
+<div class="modalHeader">
+  <h2>Create Snippet</h2>
+  <button class="closeModalBtn">&times;</button>
+</div>
+<div class="modalBody">
+  <h3>Snippet name</h3></br>
+  <input type="text" placeholder="hi">
+  <h3>Snippet Content</h3>
+  <textarea></textarea>
+</div>
+</div> */}

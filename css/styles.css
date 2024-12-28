@@ -28,7 +28,7 @@
     position: fixed;
     top:50%;
     left: 50%;
-    transform: translate(-50%, -50%) scale(0);
+    transform: translate(-50%, -50%) scale(1);
     transition: 200ms ease-in-out;
     border: 1px solid white;
     border-radius: 10px;
