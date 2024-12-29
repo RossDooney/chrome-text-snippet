@@ -64,7 +64,7 @@ updateButton.onclick = async function() {
 deleteButton.onclick = async function() {
     const snippet = {
       searchString: snippetCode.value,
-     snippetText: snippetText.value
+      snippetText: snippetText.value
     }
     let result = await deleteSnippet(snippet.searchString);
     console.log("Delete click result: ", result.snippetText)

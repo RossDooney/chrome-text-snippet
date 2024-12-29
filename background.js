@@ -55,11 +55,12 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
       console.log("Snippet code to insert: ", data.snippet)
       insert_snippets(data.snippet, function(snippet) {
         if(snippet){
-          const {snippetCode, snippetText} = snippet
+          const {snippetCode, snippetText} = snippet;
           sendResponse({ snippetCode, snippetText });
+          return true;
         }else{
-          console.log("Error line 46")
           sendResponse({ error: "Snippet failed to insert" });
+          return true;
         }
       });
       return true;
@@ -69,9 +70,10 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
         if(snippet){
           const {snippetCode, snippetText} = snippet
           sendResponse({ snippetCode, snippetText });
+          return true;
         }else{
-          console.log("Error line 58")
           sendResponse({ error: "Snippet not found" });
+          return true;
         }
       });
       return true;
@@ -81,9 +83,10 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
         if(snippet){
           const {snippetCode, snippetText} = snippet
           sendResponse({ snippetCode, snippetText });
+          return true;
         }else{
-          console.log("Error line 70")
           sendResponse({ error: "Snippet failed to update" });
+          return true;
         }
       });
       return true;
@@ -93,9 +96,10 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
         if(success){
           console.log("Snippet successfully deleted");
           sendResponse({ message: "Snippet successfully deleted" });
+          return true;
         } else {
-          console.log("Error line 82");
           sendResponse({ error: "Snippet failed to delete" });
+          return true;
         }
       });
       return true;
@@ -104,9 +108,10 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
       fetch_all_snippets(function(snippets) {
         if(snippets){
           sendResponse(snippets);
+          return true;
         }else{
-          console.log("Error line 93")
           sendResponse({ error: "Snippet not found" });
+          return true;
         }
       });
       return true;
@@ -126,9 +131,11 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
         delete_database(function(error){
           if(error){
             console.error("Database deletion failed:", error);
+            return true;
           } else {
             console.log("Database deleted successfully.");
             sendResponse({ message: "DB deleted" });
+            return true;
           }
         });
         return true;

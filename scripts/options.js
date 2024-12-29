@@ -3,7 +3,6 @@ const overLay = document.getElementById("overlay")
 const modalDiv = document.getElementById("modalDiv")
 
 loadSnippets();
-modalDiv.appendChild(createModal());
 
 async function loadSnippets(){
   await openDb();
@@ -11,32 +10,26 @@ async function loadSnippets(){
   result.forEach(snippet => {
     console.log("Snippet: ", snippet)
     snippetList.appendChild(createSnippetRow(snippet.snippetCode, snippet.snippetText));
-
   })
   return;
 }
 
 overLay.addEventListener('click', ()=>{
-  const modals = document.querySelectorAll('.snippetModal.active')
-  modals.forEach(modal => {
-    closeModal(modal)
-  })
+  modalDiv.replaceChildren();
 })
 
 document.addEventListener("click", async function (event) {
   const btnId = event.target.className;
-  
+  let result;
   switch(btnId){
     case "createBtn":
-      const modal = document.querySelector(event.target.dataset.modalTarget);
-      await createSnippet(modal);
+      modalDiv.appendChild(createModal());
       return true;
     case "closeModalBtn":
-      const parentModal = event.target.closest('.snippetModal')
-      closeModal(parentModal);
+      modalDiv.replaceChildren();
       return true;
     case "loadMore":
-      let result = await fetchAllSnippets();
+      result = await fetchAllSnippets();
       result.forEach(snippet => {
         console.log("Snippet: ", snippet)
         snippetList.appendChild(createSnippetRow(snippet.snippetCode, snippet.snippetText));    
@@ -61,7 +54,15 @@ document.addEventListener("click", async function (event) {
         console.log("Cannot find parent TR")
       }
       return true;
-
+    case "saveSnip":
+      const snippet = {
+        snippetCode: document.getElementById("snipCode").value,
+        snippetText: document.getElementById("snipText").value
+      }
+      console.log(snippet.snippetCode)
+      result = await insertSnippets(snippet);
+      console.log("Insert click result: ", result)
+      return;
     default:
       console.warn(`Unhandled button action: ${btnId}`);
       break;
@@ -79,20 +80,6 @@ async function openDb(){
       }
     });
   });
-}
-
-async function createSnippet(modal) {
-  if (!modal) return
-
-  modal.classList.add('active')
-  overLay.classList.add('active')
-}
-
-function closeModal(modal) {
-  if (!modal) return;
-
-  modal.classList.remove('active');
-  overLay.classList.remove('active');
 }
 
 async function fetchAllSnippets() {
@@ -134,14 +121,14 @@ function createModal(){
   const modalBody = createEle("div", {class: "modalBody"});
   
   modalHeader.appendChild(createEle("h2", "","Create Snippet"))
-  modalHeader.appendChild(createEle("button", {class: "closeModalBtn"}, "\u00D7"))
+  modalHeader.appendChild(createEle("button", {class: "closeModalBtn"}, "\u00D7 "))
   parentDiv.appendChild(modalHeader);
   
   modalBody.appendChild(createEle("h3", "", "Snippet name"))
-  modalBody.appendChild(createEle("input", {type: "text", placeholder: "hi"}))
+  modalBody.appendChild(createEle("input", {type: "text", id: "snipCode"}))
   modalBody.appendChild(createEle("h3", "", "Snippet Content"))
-  modalBody.appendChild(createEle("textarea"))
-  modalBody.appendChild(createBtn("", "Save"))
+  modalBody.appendChild(createEle("textarea", {id: "snipText"}))
+  modalBody.appendChild(createEle("button", {class: "saveSnip"}, "Save"))
   parentDiv.appendChild(modalBody);
 
   return parentDiv;
@@ -155,25 +142,3 @@ function createEle(elementType, attributes = {}, elementText = ""){
   if(elementText) element.textContent = elementText;
   return element;
 }
-
-function createBtn(className, textContent){
-  const button = document.createElement("button");
-  button.setAttribute("class", className);
-  button.textContent = textContent;
-  return button;
-}
-
-
-
-{/* <div class="snippetModal" id="snippetModal">
-<div class="modalHeader">
-  <h2>Create Snippet</h2>
-  <button class="closeModalBtn">&times;</button>
-</div>
-<div class="modalBody">
-  <h3>Snippet name</h3></br>
-  <input type="text" placeholder="hi">
-  <h3>Snippet Content</h3>
-  <textarea></textarea>
-</div>
-</div> */}
