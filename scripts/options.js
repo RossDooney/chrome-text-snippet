@@ -41,12 +41,18 @@ document.addEventListener("click", async function (event) {
       if(parentRow){
         const snipId = parentRow.getAttribute("data-id")
         if(btnId == "snipDelete") {
-          let result = await deleteSnippet(snipId);
+          result = await deleteSnippet(snipId);
           console.log("Delete click result: ", result.snippetText)
           return true;
         }
         else{
-          console.log("Editing: ", snipId)
+          const row = event.target.closest("tr")
+          const snippet = {
+            snippetCode: row.querySelector(".snippetCode").querySelector("snap").textContent,
+            snippetText: row.querySelector(".snippetText").querySelector("snap").textContent
+          }
+
+          modalDiv.appendChild(createModal(snippet));
           return true;
         }
       }
@@ -54,7 +60,8 @@ document.addEventListener("click", async function (event) {
         console.log("Cannot find parent TR")
       }
       return true;
-    case "saveSnip":
+    case "insertSnip":
+    case "updateSnip":
       const snippet = {
         snippetCode: document.getElementById("snipCode").value,
         snippetText: document.getElementById("snipText").value
@@ -99,11 +106,25 @@ function createSnippetRow(snippetCode, snippetText) {
   tableRow.setAttribute('data-id', snippetCode);
   tableRow.setAttribute('class', 'snippetRow')
 
-  tableRow.appendChild(createEle("td", {class: "snipCode"}, snippetCode));
-  tableRow.appendChild(createEle("td", {class: "snipText"}, snippetText));
-  tableRow.appendChild(createEle("td", {class: "sniplastUpdate"}, "Place Holder"));
-  tableRow.appendChild(createEle("td", {class: "sniplastUsed"}, "Place Holder"));
-  tableRow.appendChild(createEle("td", {class: "snipTimeUsed"}, "Place Holder"));
+  let td = createEle("td", {class: "snippetCode"});
+  td.appendChild(createEle("snap", "", snippetCode));
+  tableRow.appendChild(td);
+
+  td = createEle("td", {class: "snippetText"})
+  td.appendChild(createEle("snap", "",snippetText))
+  tableRow.appendChild(td)
+
+  td = createEle("td", {class: "sniplastUpdate"})
+  td.appendChild(createEle("snap", "", "Please Holder"))
+  tableRow.appendChild(td)
+  
+  td = createEle("td", {class: "sniplastUsed"})
+  td.appendChild(createEle("snap", "", "Please Holder"))
+  tableRow.appendChild(td)
+  
+  td = createEle("td", {class: "snipTimeUsed"})
+  td.appendChild(createEle("snap", "", "Please Holder"))
+  tableRow.appendChild(td)
 
   const snipOptions = createEle("td", {class: "snipOption"});
 
@@ -115,7 +136,8 @@ function createSnippetRow(snippetCode, snippetText) {
   return tableRow;
 }
 
-function createModal(){ 
+function createModal(snippet){ 
+  console.log(snippet)
   const parentDiv = createEle("div", {class: "snippetModal", id: "snippetModal"});
   const modalHeader = createEle("div", {class: "modalHeader"});
   const modalBody = createEle("div", {class: "modalBody"});
@@ -125,10 +147,18 @@ function createModal(){
   parentDiv.appendChild(modalHeader);
   
   modalBody.appendChild(createEle("h3", "", "Snippet name"))
-  modalBody.appendChild(createEle("input", {type: "text", id: "snipCode"}))
+  if (snippet){
+    modalBody.appendChild(createEle("input", {type: "text", id: "snipCode", value: snippet.snippetCode, readonly: true}))
+  }else{
+    modalBody.appendChild(createEle("input", {type: "text", id: "snipCode"}))
+  }
   modalBody.appendChild(createEle("h3", "", "Snippet Content"))
-  modalBody.appendChild(createEle("textarea", {id: "snipText"}))
-  modalBody.appendChild(createEle("button", {class: "saveSnip"}, "Save"))
+  if (snippet){
+    modalBody.appendChild(createEle("textarea", {id: "snipText"}, snippet.snippetText))
+  }else{
+    modalBody.appendChild(createEle("textarea", {id: "snipText"}))
+  }
+  modalBody.appendChild(createEle("button", {class: "insertSnip"}, "Save"))
   parentDiv.appendChild(modalBody);
 
   return parentDiv;
