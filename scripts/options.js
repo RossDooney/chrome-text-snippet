@@ -102,29 +102,24 @@ async function fetchAllSnippets() {
 }
 
 function createSnippetRow(snippetCode, snippetText) {
+  const createTd = (attributes = {}, textContent = "") => {
+    const cell = document.createElement("td");
+    Object.entries(attributes).forEach(([key, value]) => {
+      cell.setAttribute(key, value)
+    })
+    cell.appendChild(createEle("snap", "", textContent))
+    return cell;
+  };
+
   const tableRow = document.createElement("tr");
   tableRow.setAttribute('data-id', snippetCode);
   tableRow.setAttribute('class', 'snippetRow')
 
-  let td = createEle("td", {class: "snippetCode"});
-  td.appendChild(createEle("snap", "", snippetCode));
-  tableRow.appendChild(td);
-
-  td = createEle("td", {class: "snippetText"})
-  td.appendChild(createEle("snap", "",snippetText))
-  tableRow.appendChild(td)
-
-  td = createEle("td", {class: "sniplastUpdate"})
-  td.appendChild(createEle("snap", "", "Please Holder"))
-  tableRow.appendChild(td)
-  
-  td = createEle("td", {class: "sniplastUsed"})
-  td.appendChild(createEle("snap", "", "Please Holder"))
-  tableRow.appendChild(td)
-  
-  td = createEle("td", {class: "snipTimeUsed"})
-  td.appendChild(createEle("snap", "", "Please Holder"))
-  tableRow.appendChild(td)
+  tableRow.appendChild(createTd({class: "snippetCode"}, snippetCode))
+  tableRow.appendChild(createTd({class: "snippetText"}, snippetText))
+  tableRow.appendChild(createTd({class: "sniplastUpdate"}, "Please Holder"))
+  tableRow.appendChild(createTd({class: "sniplastUsed"}, "Please Holder"))
+  tableRow.appendChild(createTd({class: "snipTimeUsed"}, "Please Holder"))  
 
   const snipOptions = createEle("td", {class: "snipOption"});
 
@@ -137,7 +132,7 @@ function createSnippetRow(snippetCode, snippetText) {
 }
 
 function createModal(snippet){ 
-  console.log(snippet)
+
   const parentDiv = createEle("div", {class: "snippetModal", id: "snippetModal"});
   const modalHeader = createEle("div", {class: "modalHeader"});
   const modalBody = createEle("div", {class: "modalBody"});
