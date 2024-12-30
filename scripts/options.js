@@ -23,7 +23,7 @@ document.addEventListener("click", async function (event) {
   let result;
   switch(btnId){
     case "createBtn":
-      modalDiv.appendChild(createModal());
+      modalDiv.appendChild(createModal(btnId));
       return true;
     case "closeModalBtn":
       modalDiv.replaceChildren();
@@ -52,7 +52,7 @@ document.addEventListener("click", async function (event) {
             snippetText: row.querySelector(".snippetText").querySelector("snap").textContent
           }
 
-          modalDiv.appendChild(createModal(snippet));
+          modalDiv.appendChild(createModal(btnId,snippet));
           return true;
         }
       }
@@ -66,10 +66,15 @@ document.addEventListener("click", async function (event) {
         snippetCode: document.getElementById("snipCode").value,
         snippetText: document.getElementById("snipText").value
       }
-      console.log(snippet.snippetCode)
-      result = await insertSnippets(snippet);
-      console.log("Insert click result: ", result)
-      return;
+      if(btnId === "insertSnip"){
+        result = await insertSnippets(snippet);
+        console.log("Insert click result: ", result)
+        return;
+      } else if(btnId  === "updateSnip"){
+        result = await updateSnippet(snippet)
+        console.log("Update click result: ", result)
+        return;
+      }
     default:
       console.warn(`Unhandled button action: ${btnId}`);
       break;
@@ -131,7 +136,7 @@ function createSnippetRow(snippetCode, snippetText) {
   return tableRow;
 }
 
-function createModal(snippet){ 
+function createModal(btnId, snippet){ 
 
   const parentDiv = createEle("div", {class: "snippetModal", id: "snippetModal"});
   const modalHeader = createEle("div", {class: "modalHeader"});
@@ -143,7 +148,7 @@ function createModal(snippet){
   
   modalBody.appendChild(createEle("h3", "", "Snippet name"))
   if (snippet){
-    modalBody.appendChild(createEle("input", {type: "text", id: "snipCode", value: snippet.snippetCode, readonly: true}))
+    modalBody.appendChild(createEle("input", {type: "text", id: "snipCode", value: snippet.snippetCode, disabled: true}))
   }else{
     modalBody.appendChild(createEle("input", {type: "text", id: "snipCode"}))
   }
@@ -153,7 +158,12 @@ function createModal(snippet){
   }else{
     modalBody.appendChild(createEle("textarea", {id: "snipText"}))
   }
-  modalBody.appendChild(createEle("button", {class: "insertSnip"}, "Save"))
+  console.log(btnId)
+  if(snippet && btnId === "snipEdit"){
+    modalBody.appendChild(createEle("button", {class: "updateSnip"}, "Save"))
+  }else{
+    modalBody.appendChild(createEle("button", {class: "insertSnip"}, "Save"))
+  }
   parentDiv.appendChild(modalBody);
 
   return parentDiv;
