@@ -197,6 +197,9 @@ async function open_db(open_db_callback, callback_params = []){
   return new Promise((resolve, reject) => {
     if (db){
       console.log("db already open: ", db);
+      if(open_db_callback){
+        open_db_callback(...callback_params);
+      }
       resolve();
       return;
     }
@@ -215,8 +218,6 @@ async function open_db(open_db_callback, callback_params = []){
       if(open_db_callback){
         if(callback_params){
           open_db_callback(...callback_params);
-        }else{
-          open_db_callback()
         }
       }
       resolve();
@@ -279,7 +280,7 @@ async function insert_snippets(snippets, insert_callback){
   }
   else {
     console.log("Database is not initialized");
-    await open_db(insert_snippets, [snippetCode, get_callback]);
+    await open_db(insert_snippets, [snippets, insert_callback]);
   }
 }
 
