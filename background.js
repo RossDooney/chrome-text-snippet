@@ -42,12 +42,10 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
 chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
   switch(data.event){
     case "open_db":
-      console.log("Opening DB Connection")
       open_db(function(error){
         if(error){
-          console.error("Database failed to open:", error);
+          sendResponse({ error: "DB connection failed to open" });
         } else {
-          console.log("Database opened successfully.");
           sendResponse({ message: "DB connection opened" });
         }
       });
@@ -95,7 +93,6 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
       console.log("Snippet code to Delete: ", data.searchString)
       delete_snippet(data.searchString, function(success) {
         if(success){
-          console.log("Snippet successfully deleted");
           sendResponse({ message: "Snippet successfully deleted" });
           return true;
         } else {
@@ -122,7 +119,6 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
           if(error){
             console.error("Database creation failed:", error);
           } else {
-            console.log("Database created/opened successfully.");
             sendResponse({ message: "DB created" });
           }
         });
@@ -134,7 +130,6 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
             console.error("Database deletion failed:", error);
             return true;
           } else {
-            console.log("Database deleted successfully.");
             sendResponse({ message: "DB deleted" });
             return true;
           }
@@ -205,12 +200,7 @@ async function open_db(open_db_callback, callback_params = []){
     }
     const request = indexedDB.open('testDB',1);
     request.onerror = function(event){
-      if(open_db_callback){
-        console.log("Database failed to open, no call back: ", event.target.error)
-        reject(event.target.error);
-      }else{
-        console.log("Database failed to open, no call back: ", event.target.error)
-      }  
+      reject(event.target.error); 
     }
 
     request.onsuccess = function (event) {

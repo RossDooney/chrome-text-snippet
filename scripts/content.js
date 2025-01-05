@@ -35,7 +35,6 @@ document.addEventListener('keydown', async function(event) {
         return  
     }
 
-    
     if(currentKey.charCodeAt(0) === 47 && !insertSearch){
         insertSearch = true;
         searchStartPoint = activeElement.selectionStart;
