@@ -52,9 +52,7 @@ document.addEventListener('keydown', async function(event) {
         console.log("Search size: " + searchLength);
         return
     }
-
     searchLength += 1;
-
 });
 
 function resetSearch() {

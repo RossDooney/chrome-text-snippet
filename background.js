@@ -21,7 +21,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
                 target: { tabId: tabId },
                 func: () => { window.isScriptInjected = true; }
             });
-            open_db();
+
             console.log("content script injected");
         }).catch(err => console.log(err, "error injecting script"));
     }).catch(err => console.log(err, "error checking script"));
@@ -193,26 +193,35 @@ function create_database(create_db_callback){
   };
 }
 
-function open_db(open_db_callback){
-  if (db){
-    open_db_callback();
-    return;
-  }
-  const request = indexedDB.open('testDB',1);
-  request.onerror = function(event){
-    if(open_db_callback){
-      open_db_callback(new Error("Database failed to open: ", event.target.error))
-    }else{
-      console.log("Database failed to open, no call back: ", event.target.error)
-    }  
-  }
-
-  request.onsuccess = function (event) {
-    db = event.target.result;
-    if(open_db_callback){
-      open_db_callback();
+async function open_db(open_db_callback, callback_params = []){
+  return new Promise((resolve, reject) => {
+    if (db){
+      console.log("db already open: ", db);
+      resolve();
+      return;
     }
-  };
+    const request = indexedDB.open('testDB',1);
+    request.onerror = function(event){
+      if(open_db_callback){
+        console.log("Database failed to open, no call back: ", event.target.error)
+        reject(event.target.error);
+      }else{
+        console.log("Database failed to open, no call back: ", event.target.error)
+      }  
+    }
+
+    request.onsuccess = function (event) {
+      db = event.target.result;
+      if(open_db_callback){
+        if(callback_params){
+          open_db_callback(...callback_params);
+        }else{
+          open_db_callback()
+        }
+      }
+      resolve();
+    };
+  });
 }
 
 function delete_database(delete_db_callback){
@@ -234,7 +243,7 @@ function delete_database(delete_db_callback){
   }
 }
 
-function insert_snippets(snippets, insert_callback){
+async function insert_snippets(snippets, insert_callback){
   if(db){
     const insert_transaction = db.transaction("snippets", "readwrite");
     const objectStore = insert_transaction.objectStore("snippets");
@@ -270,11 +279,11 @@ function insert_snippets(snippets, insert_callback){
   }
   else {
     console.log("Database is not initialized");
-    insert_callback(undefined); 
+    await open_db(insert_snippets, [snippetCode, get_callback]);
   }
 }
 
-function get_snippet(snippetCode, get_callback){
+async function get_snippet(snippetCode, get_callback){
   if(db){
     const get_transaction = db.transaction("snippets", "readonly");
     const objectStore = get_transaction.objectStore("snippets");
@@ -304,11 +313,11 @@ function get_snippet(snippetCode, get_callback){
   }
   else {
     console.log("Database is not initialized");
-    get_callback(undefined)
+    await open_db(get_snippet, [snippetCode, get_callback]);
   }
 }
 
-function fetch_all_snippets(fetch_all_callback){
+async function fetch_all_snippets(fetch_all_callback){
   if(db){
     const get_transaction = db.transaction("snippets", "readonly");
     const objectStore = get_transaction.objectStore("snippets");
@@ -337,11 +346,11 @@ function fetch_all_snippets(fetch_all_callback){
   }
   else {
     console.log("Database is not initialized");
-    get_callback(undefined)
+    await open_db(fetch_all_snippets, [fetch_all_callback]);
   }
 }
 
-function update_snippet(snippet, update_callback){
+async function update_snippet(snippet, update_callback){
   if(db){
     const put_transaction = db.transaction("snippets", "readwrite");
     const objectStore = put_transaction.objectStore("snippets");
@@ -367,11 +376,11 @@ function update_snippet(snippet, update_callback){
   }
   else {
     console.log("Database is not initialized");
-    update_callback(undefined); 
+    await open_db(update_snippet, [snippet, update_callback]);
   }
 }
 
-function delete_snippet(snippetCode, delete_callback){
+async function delete_snippet(snippetCode, delete_callback){
   if(db){
     const delete_transaction = db.transaction("snippets", "readwrite");
     const objectStore = delete_transaction.objectStore("snippets");
@@ -398,6 +407,6 @@ function delete_snippet(snippetCode, delete_callback){
   }
   else {
     console.log("Database is not initialized");
-    delete_callback(false); 
+    await open_db(delete_snippet, [snippetCode, delete_callback]);
   }
 }
