@@ -10,6 +10,10 @@
     min-width: 300px;
 }
 
+.popup{
+    min-width: 100px;
+}
+
 .button_cont button{
     padding: 10px;
     border: none;

@@ -9,7 +9,7 @@ async function loadSnippets(){
   let result = await fetchAllSnippets();
   result.forEach(snippet => {
     console.log("Snippet: ", snippet)
-    snippetList.appendChild(createSnippetRow(snippet.snippetCode, snippet.snippetText));
+    snippetList.appendChild(createSnippetRow(snippet, snippet));
   })
   return;
 }
@@ -27,13 +27,6 @@ document.addEventListener("click", async function (event) {
       return true;
     case "closeModalBtn":
       modalDiv.replaceChildren();
-      return true;
-    case "loadMore":
-      result = await fetchAllSnippets();
-      result.forEach(snippet => {
-        console.log("Snippet: ", snippet)
-        snippetList.appendChild(createSnippetRow(snippet.snippetCode, snippet.snippetText));    
-      });
       return true;
     case "snipDelete":
     case "snipEdit":
@@ -106,7 +99,7 @@ async function fetchAllSnippets() {
   });
 }
 
-function createSnippetRow(snippetCode, snippetText) {
+function createSnippetRow(snippet) {
   const createTd = (attributes = {}, textContent = "") => {
     const cell = document.createElement("td");
     Object.entries(attributes).forEach(([key, value]) => {
@@ -117,12 +110,11 @@ function createSnippetRow(snippetCode, snippetText) {
   };
 
   const tableRow = document.createElement("tr");
-  tableRow.setAttribute('data-id', snippetCode);
+  tableRow.setAttribute('data-id', snippet.snippetCode);
   tableRow.setAttribute('class', 'snippetRow')
-
-  tableRow.appendChild(createTd({class: "snippetCode"}, snippetCode))
-  tableRow.appendChild(createTd({class: "snippetText"}, snippetText))
-  tableRow.appendChild(createTd({class: "sniplastUpdate"}, "Please Holder"))
+  tableRow.appendChild(createTd({class: "snippetCode"}, snippet.snippetCode))
+  tableRow.appendChild(createTd({class: "snippetText"}, snippet.snippetText))
+  tableRow.appendChild(createTd({class: "sniplastUpdate"}, snippet.LastUpdated))
   tableRow.appendChild(createTd({class: "sniplastUsed"}, "Please Holder"))
   tableRow.appendChild(createTd({class: "snipTimeUsed"}, "Please Holder"))  
 

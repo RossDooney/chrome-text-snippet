@@ -354,6 +354,7 @@ async function update_snippet(snippet, update_callback){
       console.log("Update completed.")
     }
 
+    snippet.LastUpdated = new Date().toISOString().slice(0, 19).replace("T", " ")
     let request = objectStore.put(snippet)
   
     request.onerror = function(){
