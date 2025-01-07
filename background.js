@@ -43,8 +43,7 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
       console.log("Snippet code to search: ", data.searchString)
       get_snippet(data.searchString, function(snippet) {
         if(snippet){
-          const {snippetCode, snippetText} = snippet
-          sendResponse({ snippetCode, snippetText });
+          sendResponse(snippet);
           return true;
         }else{
           sendResponse({ error: "Snippet not found" });
@@ -53,8 +52,7 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
       });
       return true;
     case "snippetUsed":
-      console.log("Snippet code to insert: ", data.snippet)
-      snippet_used(data.snippetCode);
+      snippet_used(data.snippet);
       return true;
     case "insert":
       console.log("Snippet code to insert: ", data.snippet)
@@ -226,10 +224,6 @@ async function insert_snippets(snippets, insert_callback){
       console.log("There was an error inserting.")
     }
     
-    insert_transaction.oncomplete = function(){
-      console.log("Insert completed.")
-    }
-
     if(Array.isArray(snippets)){
       snippets.forEach(snippet => {
         let request = objectStore.add(snippet)
@@ -265,10 +259,6 @@ async function get_snippet(snippetCode, get_callback){
       console.log("There was an error getting records.")
     }
     
-    get_transaction.oncomplete = function(){
-      console.log("Get completed.")
-    }
-
     let request = objectStore.get(snippetCode);
 
     request.onerror = function(){
@@ -299,10 +289,6 @@ async function fetch_all_snippets(fetch_all_callback){
       console.log("There was an error getting records.")
     }
     
-    get_transaction.oncomplete = function(){
-      console.log("Get completed.")
-    }
-
     let request = objectStore.getAll();
 
     request.onerror = function(){
@@ -333,11 +319,7 @@ async function update_snippet(snippet, update_callback){
       console.log("There was an error updating.")
     }
     
-    put_transaction.oncomplete = function(){
-      console.log("Update completed.")
-    }
-
-    snippet.LastUpdated = new Date().toISOString().slice(0, 19).replace("T", " ")
+    snippet.lastUpdated = new Date().toISOString().slice(0, 19).replace("T", " ")
     let request = objectStore.put(snippet)
   
     request.onerror = function(){
@@ -356,7 +338,35 @@ async function update_snippet(snippet, update_callback){
 }
 
 async function snippet_used(snippet){
-  console.log("snippet_used called for: ", snippet)
+  if(db){
+    const put_transaction = db.transaction("snippets", "readwrite");
+    const objectStore = put_transaction.objectStore("snippets");
+
+    put_transaction.onerror = function(){
+      console.log("There was an error updating.")
+    }
+    
+    if(!snippet.timesUsed){
+      snippet.timesUsed = 1;
+    }
+
+    snippet.timesUsed += 1;
+    snippet.lastUsed = new Date().toISOString().slice(0, 19).replace("T", " ")
+    let request = objectStore.put(snippet)
+  
+    request.onerror = function(){
+      console.log("unable to update snippet");
+    }
+  
+    request.onsuccess = function(){
+      return
+    }
+  }
+  else {
+    console.log("Database is not initialized");
+    await open_db(snippet_used, [snippet]);
+  }
+  
 }
 
 async function delete_snippet(snippetCode, delete_callback){
@@ -368,10 +378,6 @@ async function delete_snippet(snippetCode, delete_callback){
       console.log("There was an error deleting.")
     }
     
-    delete_transaction.oncomplete = function(){
-      console.log("Delete completed.")
-    }
-
     let request = objectStore.delete(snippetCode)
   
     request.onerror = function(){

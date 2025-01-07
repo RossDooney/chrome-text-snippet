@@ -114,9 +114,9 @@ function createSnippetRow(snippet) {
   tableRow.setAttribute('class', 'snippetRow')
   tableRow.appendChild(createTd({class: "snippetCode"}, snippet.snippetCode))
   tableRow.appendChild(createTd({class: "snippetText"}, snippet.snippetText))
-  tableRow.appendChild(createTd({class: "sniplastUpdate"}, snippet.LastUpdated))
-  tableRow.appendChild(createTd({class: "sniplastUsed"}, "Please Holder"))
-  tableRow.appendChild(createTd({class: "snipTimeUsed"}, "Please Holder"))  
+  tableRow.appendChild(createTd({class: "sniplastUpdate"}, snippet.lastUpdated))
+  tableRow.appendChild(createTd({class: "sniplastUsed"}, snippet.lastUsed))
+  tableRow.appendChild(createTd({class: "snipTimeUsed"}, snippet.timesUsed))  
 
   const snipOptions = createEle("td", {class: "snipOption"});
 
