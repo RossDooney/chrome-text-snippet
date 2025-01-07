@@ -22,10 +22,11 @@ document.addEventListener('keydown', async function(event) {
     if(currentKey.charCodeAt(0) === 69 && insertSearch){
 
         searchString = activeElement.value.slice((searchStartPoint + 1), (searchStartPoint + searchLength + 1))
-        let x = await fetchSnippet(searchString);  
-        if(x.snippetText){
+        let snippet = await fetchSnippet(searchString);  
+        if(snippet.snippetText){
             const insertEnd = searchStartPoint + searchString.length + 1;
-            activeElement.setRangeText(x.snippetText, searchStartPoint, insertEnd, 'select');
+            activeElement.setRangeText(snippet.snippetText, searchStartPoint, insertEnd, 'select');
+            updateSnippetUsed(snippet.snippetCode)
             resetSearch()
             return
         }
@@ -65,7 +66,19 @@ async function fetchSnippet(searchString) {
         if (chrome.runtime.lastError) {
           reject(chrome.runtime.lastError);
         } else {
-          resolve(response);
+            resolve(response);
+        }
+      });
+    });
+}
+
+async function updateSnippetUsed(snippetCode) {
+    return new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage({ event: "snippetUsed", snippetCode }, (response) => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+            resolve(response);
         }
       });
     });

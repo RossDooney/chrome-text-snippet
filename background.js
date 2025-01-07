@@ -28,17 +28,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   }
 });
 
-// chrome.commands.onCommand.addListener((command) => {
-//     if (command === "insert_snippet") {
-//       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-//         chrome.scripting.executeScript({
-//           target: { tabId: tabs[0].id },
-//           function: insertText
-//         });
-//       });
-//     }
-//   });
-
 chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
   switch(data.event){
     case "open_db":
@@ -47,19 +36,6 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
           sendResponse({ error: "DB connection failed to open" });
         } else {
           sendResponse({ message: "DB connection opened" });
-        }
-      });
-      return true;
-    case "insert":
-      console.log("Snippet code to insert: ", data.snippet)
-      insert_snippets(data.snippet, function(snippet) {
-        if(snippet){
-          const {snippetCode, snippetText} = snippet;
-          sendResponse({ snippetCode, snippetText });
-          return true;
-        }else{
-          sendResponse({ error: "Snippet failed to insert" });
-          return true;
         }
       });
       return true;
@@ -72,6 +48,23 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
           return true;
         }else{
           sendResponse({ error: "Snippet not found" });
+          return true;
+        }
+      });
+      return true;
+    case "snippetUsed":
+      console.log("Snippet code to insert: ", data.snippet)
+      snippet_used(data.snippetCode);
+      return true;
+    case "insert":
+      console.log("Snippet code to insert: ", data.snippet)
+      insert_snippets(data.snippet, function(snippet) {
+        if(snippet){
+          const {snippetCode, snippetText} = snippet;
+          sendResponse({ snippetCode, snippetText });
+          return true;
+        }else{
+          sendResponse({ error: "Snippet failed to insert" });
           return true;
         }
       });
@@ -139,16 +132,6 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
       break;
   }
 })
-
-// function insertText() {
-//     const snippet = "Predefined Text";
-    
-//     const activeElement = document.activeElement;
-  
-//     if (activeElement.tagName === "TEXTAREA" || activeElement.tagName === "INPUT") {
-//       activeElement.value += snippet;
-//     }
-// }
 
 let db = null
 
@@ -370,6 +353,10 @@ async function update_snippet(snippet, update_callback){
     console.log("Database is not initialized");
     await open_db(update_snippet, [snippet, update_callback]);
   }
+}
+
+async function snippet_used(snippet){
+  console.log("snippet_used called for: ", snippet)
 }
 
 async function delete_snippet(snippetCode, delete_callback){
