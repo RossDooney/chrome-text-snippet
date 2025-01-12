@@ -14,14 +14,17 @@ async function loadSnippets(){
 
 
 document.addEventListener("click", async function (event) {
-  const btnId = event.target.className;
+  const elemId = event.target.className;
+  const modal = document.getElementById("snippetModal");
   let result;
-  switch(btnId){
+  switch(elemId){
     case "createBtn":
-      document.body.appendChild(createModal(btnId));
+      if(modal){
+        modal.remove()
+      }
+      document.body.appendChild(createModal(elemId));
       return true;
     case "closeModalBtn":
-      modal = document.getElementById("snippetModal");
       if(modal){
         modal.remove();
       }
@@ -31,7 +34,7 @@ document.addEventListener("click", async function (event) {
       const parentRow = event.target.closest("tr"); 
       if(parentRow){
         const snipId = parentRow.getAttribute("data-id")
-        if(btnId == "snipDelete") {
+        if(elemId == "snipDelete") {
           result = await deleteSnippet(snipId);
           console.log("Delete click result: ", result.snippetText)
           return true;
@@ -42,8 +45,10 @@ document.addEventListener("click", async function (event) {
             snippetCode: row.querySelector(".snippetCode").querySelector("snap").textContent,
             snippetText: row.querySelector(".snippetText").querySelector("snap").textContent
           }
-
-          document.body.appendChild(createModal(btnId,snippet));
+          if(modal){
+            modal.remove();
+          }
+          document.body.appendChild(createModal(elemId,snippet));
           return true;
         }
       }
@@ -57,22 +62,21 @@ document.addEventListener("click", async function (event) {
         snippetCode: document.getElementById("snipCode").value,
         snippetText: document.getElementById("snipText").value
       }
-      if(btnId === "insertSnip"){
+      if(elemId === "insertSnip"){
         result = await insertSnippets(snippet);
         console.log("Insert click result: ", result)
         return;
-      } else if(btnId  === "updateSnip"){
+      } else if(elemId  === "updateSnip"){
         result = await updateSnippet(snippet)
         console.log("Update click result: ", result)
         return;
       }
     default:
-      modal = document.getElementById("snippetModal");
       if(modal && !event.target.closest(".snippetModal")){
         modal.remove();
         return true;
       }
-      console.warn(`Unhandled button action: ${btnId}`);
+      console.warn(`Unhandled button action: ${elemId}`);
       break;
   }
 });
