@@ -14,12 +14,10 @@ async function loadSnippets(){
   return;
 }
 
-overLay.addEventListener('click', ()=>{
-  modalDiv.replaceChildren();
-})
 
 document.addEventListener("click", async function (event) {
   const btnId = event.target.className;
+  console.log(btnId)
   let result;
   switch(btnId){
     case "createBtn":
