@@ -1,6 +1,4 @@
 const snippetList = document.getElementById("snippetList")
-const overLay = document.getElementById("overlay")
-const modalDiv = document.getElementById("modalDiv")
 
 loadSnippets();
 
@@ -17,14 +15,16 @@ async function loadSnippets(){
 
 document.addEventListener("click", async function (event) {
   const btnId = event.target.className;
-  console.log(btnId)
   let result;
   switch(btnId){
     case "createBtn":
-      modalDiv.appendChild(createModal(btnId));
+      document.body.appendChild(createModal(btnId));
       return true;
     case "closeModalBtn":
-      modalDiv.replaceChildren();
+      modal = document.getElementById("snippetModal");
+      if(modal){
+        modal.remove();
+      }
       return true;
     case "snipDelete":
     case "snipEdit":
@@ -43,7 +43,7 @@ document.addEventListener("click", async function (event) {
             snippetText: row.querySelector(".snippetText").querySelector("snap").textContent
           }
 
-          modalDiv.appendChild(createModal(btnId,snippet));
+          document.body.appendChild(createModal(btnId,snippet));
           return true;
         }
       }
@@ -67,6 +67,11 @@ document.addEventListener("click", async function (event) {
         return;
       }
     default:
+      modal = document.getElementById("snippetModal");
+      if(modal && !event.target.closest(".snippetModal")){
+        modal.remove();
+        return true;
+      }
       console.warn(`Unhandled button action: ${btnId}`);
       break;
   }
