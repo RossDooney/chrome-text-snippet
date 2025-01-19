@@ -7,7 +7,7 @@ async function loadSnippets(){
   let result = await fetchAllSnippets();
   result.forEach(snippet => {
     console.log("Snippet: ", snippet)
-    snippetList.appendChild(createSnippetRow(snippet, snippet));
+    snippetList.appendChild(createSnippetRow(snippet));
   })
   return;
 }
@@ -36,6 +36,7 @@ document.addEventListener("click", async function (event) {
         const snipId = parentRow.getAttribute("data-id")
         if(elemId == "snipDelete") {
           result = await deleteSnippet(snipId);
+          parentRow.remove();
           console.log("Delete click result: ", result.snippetText)
           return true;
         }
@@ -64,7 +65,7 @@ document.addEventListener("click", async function (event) {
       }
       if(elemId === "insertSnip"){
         result = await insertSnippets(snippet);
-        console.log("Insert click result: ", result)
+        snippetList.appendChild(createSnippetRow(result));
         return;
       } else if(elemId  === "updateSnip"){
         result = await updateSnippet(snippet)
@@ -124,6 +125,7 @@ function createSnippetRow(snippet) {
   tableRow.appendChild(createTd({class: "sniplastUpdate"}, snippet.lastUpdated))
   tableRow.appendChild(createTd({class: "sniplastUsed"}, snippet.lastUsed))
   tableRow.appendChild(createTd({class: "snipTimeUsed"}, snippet.timesUsed))  
+  console.log("Times used: ", snippet.timesUsed)
 
   const snipOptions = createEle("td", {class: "snipOption"});
 
@@ -173,6 +175,6 @@ function createEle(elementType, attributes = {}, elementText = ""){
   Object.entries(attributes).forEach(([key, value]) => {
     element.setAttribute(key, value)
   })
-  if(elementText) element.textContent = elementText;
+  if (elementText !== null && elementText !== undefined) element.textContent = elementText;
   return element;
 }

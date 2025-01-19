@@ -58,8 +58,7 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
       console.log("Snippet code to insert: ", data.snippet)
       insert_snippets(data.snippet, function(snippet) {
         if(snippet){
-          const {snippetCode, snippetText} = snippet;
-          sendResponse({ snippetCode, snippetText });
+          sendResponse(snippet);
           return true;
         }else{
           sendResponse({ error: "Snippet failed to insert" });
@@ -226,6 +225,9 @@ async function insert_snippets(snippets, insert_callback){
     
     if(Array.isArray(snippets)){
       snippets.forEach(snippet => {
+        snippet.timesUsed = 0;
+        snippet.lastUsed = new Date().toISOString().slice(0, 19).replace("T", " ")
+        snippet.lastUpdated = new Date().toISOString().slice(0, 19).replace("T", " ")
         let request = objectStore.add(snippet)
   
         request.onsuccess = function(){
@@ -234,14 +236,17 @@ async function insert_snippets(snippets, insert_callback){
       })
     }
     else{
+      snippets.timesUsed = 0;
+      snippets.lastUsed = new Date().toISOString().slice(0, 19).replace("T", " ")
+      snippets.lastUpdated = new Date().toISOString().slice(0, 19).replace("T", " ")
       let request = objectStore.add(snippets)
   
       request.onerror = function(event){
         console.log("unable to add snippet: ", event.target.error);
       }
-  
-      request.onsuccess = function(){
-        insert_callback();
+
+      request.onsuccess = function(event){
+        insert_callback(snippets);
       }
     }
   }
