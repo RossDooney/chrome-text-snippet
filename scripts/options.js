@@ -61,7 +61,7 @@ document.addEventListener("click", async function (event) {
     case "updateSnip":
       const snippet = {
         snippetCode: document.getElementById("snipCode").value,
-        snippetText: document.getElementById("snipText").value
+        snippetText: document.getElementById("snipText").value,
       }
       if(elemId === "insertSnip"){
         result = await insertSnippets(snippet);

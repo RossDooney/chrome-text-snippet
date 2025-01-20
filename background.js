@@ -279,6 +279,7 @@ async function get_snippet(snippetCode, get_callback){
         get_callback(undefined)
       }
     }
+    return true;
   }
   else {
     console.log("Database is not initialized");
@@ -317,14 +318,29 @@ async function fetch_all_snippets(fetch_all_callback){
 
 async function update_snippet(snippet, update_callback){
   if(db){
+   
+    snippet.lastUpdated = new Date().toISOString().slice(0, 19).replace("T", " ")
+    if(snippet.timesUsed === undefined || snippet.lastUsed === undefined || snippet.timesUsed === undefined){
+      const snippet_data = await fetchSnippet(snippet.snippetCode);
+      if(snippet_data){
+        console.log(snippet_data)
+        snippet.timesUsed = snippet_data.timesUsed;
+        snippet.lastUsed = snippet_data.lastUsed;
+        snippet.timesUsed = snippet_data.timesUsed;
+      }else{
+        console.log("3")
+        update_callback(undefined);
+        return;
+      }
+    }
+    
     const put_transaction = db.transaction("snippets", "readwrite");
     const objectStore = put_transaction.objectStore("snippets");
 
     put_transaction.onerror = function(){
       console.log("There was an error updating.")
     }
-    
-    snippet.lastUpdated = new Date().toISOString().slice(0, 19).replace("T", " ")
+
     let request = objectStore.put(snippet)
   
     request.onerror = function(){
@@ -399,4 +415,17 @@ async function delete_snippet(snippetCode, delete_callback){
     console.log("Database is not initialized");
     await open_db(delete_snippet, [snippetCode, delete_callback]);
   }
+}
+
+
+async function fetchSnippet(searchString) {
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage({ event: "get", searchString }, (response) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve(response);
+      }
+    });
+  });
 }
