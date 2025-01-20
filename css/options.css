@@ -24,3 +24,43 @@ body {
 .createBtn {
     float: right;
 }
+
+table {
+  border-collapse: collapse;
+  width: 100%; 
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+td:nth-child(2) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; 
+  width: 200px;
+  max-width: 200px;
+}
+
+.snipOption {
+  gap: 5px; 
+}
+
+.snipOption button {
+  padding: 5px 10px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.snipDelete {
+  background-color: #f44336; 
+  color: white;
+}
+
+.snipEdit {
+  background-color: #4CAF50; 
+  color: white;
+}
