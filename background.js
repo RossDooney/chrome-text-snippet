@@ -323,17 +323,15 @@ async function update_snippet(snippet, update_callback){
     if(snippet.timesUsed === undefined || snippet.lastUsed === undefined || snippet.timesUsed === undefined){
       const snippet_data = await fetchSnippet(snippet.snippetCode);
       if(snippet_data){
-        console.log(snippet_data)
         snippet.timesUsed = snippet_data.timesUsed;
         snippet.lastUsed = snippet_data.lastUsed;
         snippet.timesUsed = snippet_data.timesUsed;
       }else{
-        console.log("3")
         update_callback(undefined);
         return;
       }
     }
-    
+
     const put_transaction = db.transaction("snippets", "readwrite");
     const objectStore = put_transaction.objectStore("snippets");
 
