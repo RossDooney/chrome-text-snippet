@@ -28,107 +28,160 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   }
 });
 
-chrome.runtime.onMessage.addListener((data, sender, sendResponse) =>{
-  switch(data.event){
-    case "open_db":
-      open_db(function(error){
-        if(error){
-          sendResponse({ error: "DB connection failed to open" });
-        } else {
-          sendResponse({ message: "DB connection opened" });
+chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
+  try {
+    switch (data.event) {
+      case "open_db":
+        try {
+          open_db(function (error) {
+            if (error) {
+              sendResponse({ error: "DB connection failed to open" });
+            } else {
+              sendResponse({ message: "DB connection opened" });
+            }
+          });
+        } catch (error) {
+          console.error("Error in open_db:", error);
+          sendResponse({ error: "An unexpected error occurred in open_db" });
         }
-      });
-      return true;
-    case "get":
-      console.log("Snippet code to search: ", data.searchString)
-      get_snippet(data.searchString, function(snippet) {
-        if(snippet){
-          sendResponse(snippet);
-          return true;
-        }else{
-          sendResponse({ error: "Snippet not found" });
-          return true;
-        }
-      });
-      return true;
-    case "snippetUsed":
-      snippet_used(data.snippet);
-      return true;
-    case "insert":
-      console.log("Snippet code to insert: ", data.snippet)
-      insert_snippets(data.snippet, function(snippet) {
-        if(snippet){
-          sendResponse(snippet);
-          return true;
-        }else{
-          sendResponse({ error: "Snippet failed to insert" });
-          return true;
-        }
-      });
-      return true;
-    case "update":
-      console.log("Snippet code to Update: ", data.snippet)
-      update_snippet(data.snippet, function(snippet) {
-        if(snippet){
-          const {snippetCode, snippetText} = snippet
-          sendResponse({ snippetCode, snippetText });
-          return true;
-        }else{
-          sendResponse({ error: "Snippet failed to update" });
-          return true;
-        }
-      });
-      return true;
-    case "delete":
-      console.log("Snippet code to Delete: ", data.searchString)
-      delete_snippet(data.searchString, function(success) {
-        if(success){
-          sendResponse({ message: "Snippet successfully deleted" });
-          return true;
-        } else {
-          sendResponse({ error: "Snippet failed to delete" });
-          return true;
-        }
-      });
-      return true;
-    case "get_all":
-      console.log("Getting all snippets")
-      fetch_all_snippets(function(snippets) {
-        if(snippets){
-          sendResponse(snippets);
-          return true;
-        }else{
-          sendResponse({ error: "Snippet not found" });
-          return true;
-        }
-      });
-      return true;
-    case "create_db":
-        console.log("Creating DB")
-        create_database(function(error){
-          if(error){
-            console.error("Database creation failed:", error);
-          } else {
-            sendResponse({ message: "DB created" });
-          }
-        });
         return true;
-    case "delete_db":
-        console.log("Deleting the database")
-        delete_database(function(error){
-          if(error){
-            console.error("Database deletion failed:", error);
-            return true;
-          } else {
-            sendResponse({ message: "DB deleted" });
-            return true;
-          }
-        });
+
+      case "get":
+        console.log("Snippet code to search: ", data.searchString);
+        try {
+          get_snippet(data.searchString, function (snippet) {
+            if (snippet) {
+              sendResponse(snippet);
+            } else {
+              sendResponse({ error: "Snippet not found" });
+            }
+          });
+        } catch (error) {
+          console.error("Error in get:", error);
+          sendResponse({ error: "An unexpected error occurred in get" });
+        }
         return true;
-    default:
-      break;
+
+      case "snippetUsed":
+        try {
+          snippet_used(data.snippet);
+          sendResponse({ message: "Snippet usage updated" });
+        } catch (error) {
+          console.error("Error in snippetUsed:", error);
+          sendResponse({ error: "An unexpected error occurred in snippetUsed" });
+        }
+        return true;
+
+      case "insert":
+        console.log("Snippet code to insert: ", data.snippet);
+        try {
+          insert_snippets(data.snippet, function (snippet) {
+            if (snippet) {
+              sendResponse(snippet);
+            } else {
+              sendResponse({ error: "Snippet failed to insert" });
+            }
+          });
+        } catch (error) {
+          console.error("Error in insert:", error);
+          sendResponse({ error: "An unexpected error occurred in insert" });
+        }
+        return true;
+
+      case "update":
+        console.log("Snippet code to Update: ", data.snippet);
+        try {
+          update_snippet(data.snippet, function (snippet) {
+            if (snippet) {
+              sendResponse(snippet);
+            } else {
+              sendResponse({ error: "Snippet failed to update" });
+            }
+            return true;
+          });
+        } catch (error) {
+          console.error("Error in update:", error);
+          sendResponse({ error: "An unexpected error occurred in update" });
+        }
+        return true;
+
+      case "delete":
+        console.log("Snippet code to Delete: ", data.searchString);
+        try {
+          delete_snippet(data.searchString, function (success) {
+            if (success) {
+              sendResponse({ message: "Snippet successfully deleted" });
+            } else {
+              sendResponse({ error: "Snippet failed to delete" });
+            }
+          });
+        } catch (error) {
+          console.error("Error in delete:", error);
+          sendResponse({ error: "An unexpected error occurred in delete" });
+        }
+        return true;
+
+      case "get_all":
+        console.log("Getting all snippets");
+        try {
+          fetch_all_snippets(function (snippets) {
+            if (snippets) {
+              sendResponse(snippets);
+            } else {
+              sendResponse({ error: "Snippet not found" });
+            }
+          });
+        } catch (error) {
+          console.error("Error in get_all:", error);
+          sendResponse({ error: "An unexpected error occurred in get_all" });
+        }
+        return true;
+
+      case "create_db":
+        console.log("Creating DB");
+        try {
+          create_database(function (error) {
+            if (error) {
+              console.error("Database creation failed:", error);
+              sendResponse({ error: "Database creation failed" });
+            } else {
+              sendResponse({ message: "DB created" });
+            }
+          });
+        } catch (error) {
+          console.error("Error in create_db:", error);
+          sendResponse({ error: "An unexpected error occurred in create_db" });
+        }
+        return true;
+
+      case "delete_db":
+        console.log("Deleting the database");
+        try {
+          delete_database(function (error) {
+            if (error) {
+              console.error("Database deletion failed:", error);
+              sendResponse({ error: "Database deletion failed" });
+            } else {
+              sendResponse({ message: "DB deleted" });
+            }
+          });
+        } catch (error) {
+          console.error("Error in delete_db:", error);
+          sendResponse({ error: "An unexpected error occurred in delete_db" });
+        }
+        return true;
+
+      default:
+        console.warn("Unhandled event:", data.event);
+        sendResponse({ error: "Unhandled event type" });
+        return true;
+    }
+  } catch (error) {
+    console.error("Unexpected error in onMessage listener:", error);
+    sendResponse({ error: "An unexpected error occurred in the onMessage listener" });
+    return true;
   }
-})
+});
 
 let db = null
 
@@ -328,7 +381,7 @@ async function update_snippet(snippet, update_callback){
         snippet.timesUsed = snippet_data.timesUsed;
       }else{
         update_callback(undefined);
-        return;
+        return true;
       }
     }
 
@@ -345,9 +398,8 @@ async function update_snippet(snippet, update_callback){
       console.log("unable to update snippet");
     }
   
-    request.onsuccess = function(event){
-      result = event.target.result
-      update_callback(event.target.result);
+    request.onsuccess = function(){
+      update_callback(snippet);
     }
   }
   else {

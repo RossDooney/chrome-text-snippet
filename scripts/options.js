@@ -3,13 +3,18 @@ const snippetList = document.getElementById("snippetList")
 loadSnippets();
 
 async function loadSnippets(){
-  await openDb();
-  let result = await fetchAllSnippets();
-  result.forEach(snippet => {
-    console.log("Snippet: ", snippet)
-    snippetList.appendChild(createSnippetRow(snippet));
-  })
-  return;
+  try {
+    await openDb();
+    let result = await fetchAllSnippets();
+    result.forEach(snippet => {
+      console.log("Snippet: ", snippet)
+      snippetList.appendChild(createSnippetRow(snippet));
+    })
+    return true;
+  } catch (error) {
+    console.error("Error in loadSnippets: ", error); 
+  }
+  return true;
 }
 
 
@@ -96,16 +101,26 @@ async function openDb(){
 }
 
 async function fetchAllSnippets() {
-  return new Promise((resolve, reject) => {
-    chrome.runtime.sendMessage({ event: "get_all"}, (response) => {
-      if (chrome.runtime.lastError) {
-        reject(chrome.runtime.lastError);
-      } else {
-        resolve(response);
-      }
+  try {
+    return await new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage({ event: "get_all" }, (response) => {
+        if (chrome.runtime.lastError) {
+          console.error("Chrome runtime error in fetchAllSnippets:", chrome.runtime.lastError);
+          reject(chrome.runtime.lastError);
+        } else if (response.error) {
+          console.error("Error returned from get_all:", response.error);
+          reject(new Error(response.error));
+        } else {
+          resolve(response);
+        }
+      });
     });
-  });
+  } catch (error) {
+    console.error("Error in fetchAllSnippets:", error);
+    throw error;
+  }
 }
+
 
 function createSnippetRow(snippet) {
   const createTd = (attributes = {}, textContent = "") => {
