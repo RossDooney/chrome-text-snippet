@@ -73,8 +73,10 @@ document.addEventListener("click", async function (event) {
         snippetList.appendChild(createSnippetRow(result));
         return;
       } else if(elemId  === "updateSnip"){
+        const element = document.querySelector('[data-id='+ snippet.snippetCode +']');
         result = await updateSnippet(snippet)
-        console.log("Update click result: ", result)
+        console.log("Update click result: ", result);
+        element.replaceWith(createSnippetRow(result));
         return;
       }
     default:
