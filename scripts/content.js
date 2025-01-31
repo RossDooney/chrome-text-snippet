@@ -84,3 +84,24 @@ async function updateSnippetUsed(snippet) {
       });
     });
 }
+
+
+function createModal(){ 
+
+    const parentDiv = createEle("div", {class: "snippetModal", id: "snippetModal"});
+    const modalHeader = createEle("div", {class: "modalHeader"});
+    const modalBody = createEle("div", {class: "modalBody"});
+    
+    modalHeader.appendChild(createEle("h2", "","Search Snippet"))
+    modalHeader.appendChild(createEle("button", {class: "closeModalBtn"}, "\u00D7 "))
+    parentDiv.appendChild(modalHeader);
+    
+    modalBody.appendChild(createEle("h3", "", "Snippet name"))
+    modalBody.appendChild(createEle("input", {type: "text", id: "snipCode"}))    
+    modalBody.appendChild(createEle("h3", "", "Snippet Content"))
+
+    parentDiv.appendChild(modalBody);
+  
+    return parentDiv;
+  }
+  

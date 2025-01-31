@@ -467,7 +467,6 @@ async function delete_snippet(snippetCode, delete_callback){
   }
 }
 
-
 async function fetchSnippet(searchString) {
   return new Promise((resolve, reject) => {
     chrome.runtime.sendMessage({ event: "get", searchString }, (response) => {
