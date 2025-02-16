@@ -40,6 +40,7 @@ document.addEventListener('keydown', async function(event) {
     if(currentKey.charCodeAt(0) === 47 && !insertSearch){
         insertSearch = true;
         searchStartPoint = activeElement.selectionStart;
+        createModelAtCursor(event)
         console.log("search enabled at: ", searchStartPoint);
         return
     }
@@ -86,22 +87,46 @@ async function updateSnippetUsed(snippet) {
 }
 
 
-function createModal(){ 
+function createModelAtCursor(event){ 
 
     const parentDiv = createEle("div", {class: "snippetModal", id: "snippetModal"});
+    parentDiv.style.position = "absolute";
+    parentDiv.style.left = `${event.pageX}px`;
+    parentDiv.style.top = `${event.pageY}px`;
+
     const modalHeader = createEle("div", {class: "modalHeader"});
-    const modalBody = createEle("div", {class: "modalBody"});
-    
+    const modalBody = createEle("div", {class: "modalBody"});    
     modalHeader.appendChild(createEle("h2", "","Search Snippet"))
     modalHeader.appendChild(createEle("button", {class: "closeModalBtn"}, "\u00D7 "))
     parentDiv.appendChild(modalHeader);
-    
-    modalBody.appendChild(createEle("h3", "", "Snippet name"))
-    modalBody.appendChild(createEle("input", {type: "text", id: "snipCode"}))    
-    modalBody.appendChild(createEle("h3", "", "Snippet Content"))
 
     parentDiv.appendChild(modalBody);
   
-    return parentDiv;
+    document.body.appendChild(parentDiv);
   }
+
+  function createEle(elementType, attributes = {}, elementText = ""){
+    const element = document.createElement(elementType);
+    Object.entries(attributes).forEach(([key, value]) => {
+      element.setAttribute(key, value)
+    })
+    if (elementText !== null && elementText !== undefined) element.textContent = elementText;
+    return element;
+  }
+
+
+
+//   function createModelAtCursor(event) {
+//     let modelContainer = document.createElement("div");
+//     modelContainer.style.position = "absolute";
+//     modelContainer.style.left = `${event.pageX}px`;
+//     modelContainer.style.top = `${event.pageY}px`;
+//     modelContainer.style.width = "100px";
+//     modelContainer.style.height = "100px";
+//     modelContainer.style.zIndex = "9999";
+
+//     modelContainer.appendChild(createModal);
+//     document.body.appendChild(modelContainer);
+//   }
+
   

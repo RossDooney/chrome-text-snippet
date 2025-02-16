@@ -1,0 +1,36 @@
+.snippetModal{
+    border: 1px solid white;
+    border-radius: 10px;
+    z-index: 9999;
+    background-color: #23222B;
+    color: #FFFFFF;
+    width: 300px;
+    max-width: 40%;
+}
+
+.modalHeader{
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid white;
+}
+
+.modalHeader h2{
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.modalHeader .closeModalBtn{
+    cursor: pointer;
+    border: none;
+    outline: none;
+    background: none;
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: #FFFFFF;
+}
+
+.modalBody{
+    padding: 10px 15px;
+}

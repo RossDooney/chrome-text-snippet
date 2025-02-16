@@ -1,32 +1,32 @@
-chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === "complete") {
+// chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+//   if (changeInfo.status === "complete") {
 
-    if (tab.url && tab.url.startsWith("chrome-extension://")) {
-      console.log("Skipping Chrome extension page:", tab.url);
-      return;
-    }
-    chrome.scripting.executeScript({
-        target: { tabId: tabId },
-        func: () => !!window.isScriptInjected
-    }).then((results) => {
-        if (results[0].result) {
-            console.log("content.js already injected");
-            return;
-        }
-        chrome.scripting.executeScript({
-            target: { tabId: tabId },
-            files: ["./scripts/content.js"]
-        }).then(() => {
-            chrome.scripting.executeScript({
-                target: { tabId: tabId },
-                func: () => { window.isScriptInjected = true; }
-            });
+//     if (tab.url && tab.url.startsWith("chrome-extension://")) {
+//       console.log("Skipping Chrome extension page:", tab.url);
+//       return;
+//     }
+//     chrome.scripting.executeScript({
+//         target: { tabId: tabId },
+//         func: () => !!window.isScriptInjected
+//     }).then((results) => {
+//         if (results[0].result) {
+//             console.log("content.js already injected");
+//             return;
+//         }
+//         chrome.scripting.executeScript({
+//             target: { tabId: tabId },
+//             files: ["./scripts/content.js", "./css/modal.css"]
+//         }).then(() => {
+//             chrome.scripting.executeScript({
+//                 target: { tabId: tabId },
+//                 func: () => { window.isScriptInjected = true; }
+//             });
 
-            console.log("content script injected");
-        }).catch(err => console.log(err, "error injecting script"));
-    }).catch(err => console.log(err, "error checking script"));
-  }
-});
+//             console.log("content script injected");
+//         }).catch(err => console.log(err, "error injecting script"));
+//     }).catch(err => console.log(err, "error checking script"));
+//   }
+// });
 
 chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
   try {
