@@ -40,7 +40,8 @@ document.addEventListener('keydown', async function(event) {
     if(currentKey.charCodeAt(0) === 47 && !insertSearch){
         insertSearch = true;
         searchStartPoint = activeElement.selectionStart;
-        createModelAtCursor(event)
+        const rect = findCoordinates(activeElement, searchStartPoint);
+        createModelAtCursor(event, rect);
         console.log("search enabled at: ", searchStartPoint);
         return
     }
@@ -87,12 +88,12 @@ async function updateSnippetUsed(snippet) {
 }
 
 
-function createModelAtCursor(event){ 
+function createModelAtCursor(event, rect){ 
 
     const parentDiv = createEle("div", {class: "snippetModal", id: "snippetModal"});
     parentDiv.style.position = "absolute";
-    parentDiv.style.left = `${event.pageX}px`;
-    parentDiv.style.top = `${event.pageY}px`;
+    parentDiv.style.left = `${rect.left}px`;
+    parentDiv.style.top = `${rect.top}px`;
 
     const modalHeader = createEle("div", {class: "modalHeader"});
     const modalBody = createEle("div", {class: "modalBody"});    
@@ -103,30 +104,44 @@ function createModelAtCursor(event){
     parentDiv.appendChild(modalBody);
   
     document.body.appendChild(parentDiv);
-  }
+}
 
-  function createEle(elementType, attributes = {}, elementText = ""){
+function createEle(elementType, attributes = {}, elementText = ""){
     const element = document.createElement(elementType);
     Object.entries(attributes).forEach(([key, value]) => {
       element.setAttribute(key, value)
     })
     if (elementText !== null && elementText !== undefined) element.textContent = elementText;
     return element;
-  }
+} 
 
+function findCoordinates(activeElement, curPos){
+  const div = document.createElement("div");
+  document.body.appendChild(div);
+  const computedStyle = getComputedStyle(activeElement);
+  div.style.cssText = `
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    visibility: hidden;
+    position: absolute;
+    font: ${computedStyle.font};
+    letter-spacing: ${computedStyle.letterSpacing};
+  `;
 
+  div.style.top = `${activeElement.getBoundingClientRect().top}px`;
+  div.style.left = `${activeElement.getBoundingClientRect().left}px`;
 
-//   function createModelAtCursor(event) {
-//     let modelContainer = document.createElement("div");
-//     modelContainer.style.position = "absolute";
-//     modelContainer.style.left = `${event.pageX}px`;
-//     modelContainer.style.top = `${event.pageY}px`;
-//     modelContainer.style.width = "100px";
-//     modelContainer.style.height = "100px";
-//     modelContainer.style.zIndex = "9999";
-
-//     modelContainer.appendChild(createModal);
-//     document.body.appendChild(modelContainer);
-//   }
-
+  const text = activeElement.value.substring(0, curPos); 
+  div.textContent = text;
   
+  const span = document.createElement("span");
+  span.textContent = "/";
+  div.appendChild(span);
+
+  const rect = span.getBoundingClientRect();
+  document.body.removeChild(div);
+
+  console.log(rect)
+
+  return rect;
+}
