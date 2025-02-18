@@ -1,34 +1,4 @@
-// chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-//   if (changeInfo.status === "complete") {
-
-//     if (tab.url && tab.url.startsWith("chrome-extension://")) {
-//       console.log("Skipping Chrome extension page:", tab.url);
-//       return;
-//     }
-//     chrome.scripting.executeScript({
-//         target: { tabId: tabId },
-//         func: () => !!window.isScriptInjected
-//     }).then((results) => {
-//         if (results[0].result) {
-//             console.log("content.js already injected");
-//             return;
-//         }
-//         chrome.scripting.executeScript({
-//             target: { tabId: tabId },
-//             files: ["./scripts/content.js", "./css/modal.css"]
-//         }).then(() => {
-//             chrome.scripting.executeScript({
-//                 target: { tabId: tabId },
-//                 func: () => { window.isScriptInjected = true; }
-//             });
-
-//             console.log("content script injected");
-//         }).catch(err => console.log(err, "error injecting script"));
-//     }).catch(err => console.log(err, "error checking script"));
-//   }
-// });
-
-chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((data, sendResponse) => {
   try {
     switch (data.event) {
       case "open_db":
@@ -59,6 +29,22 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
         } catch (error) {
           console.error("Error in get:", error);
           sendResponse({ error: "An unexpected error occurred in get" });
+        }
+        return true;
+
+      case "search_keys":
+        console.log("Key to search: ", data.searchString);
+        try {
+          search_keys(data.searchString, function (snippets) {
+            if (snippets) {
+              sendResponse(snippets);
+            } else {
+              sendResponse({ error: "Snippets not found" });
+            }
+          });
+        } catch (error) {
+          console.error("Error in search_keys:", error);
+          sendResponse({ error: "An unexpected error occurred in search_keys" });
         }
         return true;
 
@@ -369,9 +355,19 @@ async function fetch_all_snippets(fetch_all_callback){
   }
 }
 
+async function search_keys(snippetCode, search_keys_callback){
+  if(db){   
+    
+  }
+  else {
+    console.log("Database is not initialized");
+    await open_db(search_keys, [snippetCode, search_keys_callback]);
+  }
+}
+
+
 async function update_snippet(snippet, update_callback){
-  if(db){
-   
+  if(db){   
     snippet.lastUpdated = new Date().toISOString().slice(0, 19).replace("T", " ")
     if(snippet.timesUsed === undefined || snippet.lastUsed === undefined || snippet.timesUsed === undefined){
       const snippet_data = await fetchSnippet(snippet.snippetCode);
@@ -456,7 +452,7 @@ async function delete_snippet(snippetCode, delete_callback){
       delete_callback(false);
     }
   
-    request.onsuccess = function(event){
+    request.onsuccess = function(){
       console.log("Snippet successfully deleted.");
       delete_callback(true);
     }

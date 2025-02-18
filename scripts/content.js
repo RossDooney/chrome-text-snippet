@@ -9,6 +9,9 @@ document.addEventListener('keydown', async function(event) {
 
     const currentKey = event.key
     const activeElement = document.activeElement;
+    const currentSearchString = () => {
+      
+    };
 
     if (!activeElement.tagName === "TEXTAREA" || !activeElement.tagName === "INPUT") {
         return
@@ -41,7 +44,7 @@ document.addEventListener('keydown', async function(event) {
         insertSearch = true;
         searchStartPoint = activeElement.selectionStart;
         const rect = findCoordinates(activeElement, searchStartPoint);
-        createModelAtCursor(event, rect);
+        createModelAtCursor(rect);
         console.log("search enabled at: ", searchStartPoint);
         return
     }
@@ -55,6 +58,7 @@ document.addEventListener('keydown', async function(event) {
         console.log("Search size: " + searchLength);
         return
     }
+
     searchLength += 1;
 });
 
@@ -88,7 +92,7 @@ async function updateSnippetUsed(snippet) {
 }
 
 
-function createModelAtCursor(event, rect){ 
+function createModelAtCursor(rect){ 
 
     const parentDiv = createEle("div", {class: "snippetModal", id: "snippetModal"});
     parentDiv.style.position = "absolute";
