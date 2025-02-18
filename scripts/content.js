@@ -10,7 +10,7 @@ document.addEventListener('keydown', async function(event) {
     const currentKey = event.key
     const activeElement = document.activeElement;
     const currentSearchString = () => {
-      
+      return activeElement.value.slice((searchStartPoint + 1), (searchStartPoint + searchLength + 1))
     };
 
     if (!activeElement.tagName === "TEXTAREA" || !activeElement.tagName === "INPUT") {
@@ -24,10 +24,9 @@ document.addEventListener('keydown', async function(event) {
 
     if(currentKey.charCodeAt(0) === 69 && insertSearch){
 
-        searchString = activeElement.value.slice((searchStartPoint + 1), (searchStartPoint + searchLength + 1))
+        searchString = currentSearchString()
         let snippet = await fetchSnippet(searchString);  //grabbing to much data, but full entry needed for updateSnippetUsed function so will keep for now.
         if(snippet.snippetText){
-            console.log(snippet)
             const insertEnd = searchStartPoint + searchString.length + 1;
             activeElement.setRangeText(snippet.snippetText, searchStartPoint, insertEnd, 'select');
             updateSnippetUsed(snippet);
@@ -144,8 +143,6 @@ function findCoordinates(activeElement, curPos){
 
   const rect = span.getBoundingClientRect();
   document.body.removeChild(div);
-
-  console.log(rect)
 
   return rect;
 }

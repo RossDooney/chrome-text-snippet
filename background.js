@@ -1,4 +1,4 @@
-chrome.runtime.onMessage.addListener((data, sendResponse) => {
+chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
   try {
     switch (data.event) {
       case "open_db":
