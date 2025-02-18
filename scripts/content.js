@@ -59,6 +59,8 @@ document.addEventListener('keydown', async function(event) {
     }
 
     searchLength += 1;
+    snippets = await searchKeys(currentSearchString());
+   
 });
 
 function resetSearch() {
@@ -72,10 +74,22 @@ async function fetchSnippet(searchString) {
         if (chrome.runtime.lastError) {
           reject(chrome.runtime.lastError);
         } else {
-            resolve(response);
+          resolve(response);
         }
       });
     });
+}
+
+async function searchKeys(searchString) {
+  return new Promise((resolve, reject) => {
+    chrome.runtime.sendMessage({ event: "search_keys", searchString }, (response) => {
+      if (chrome.runtime.lastError) {
+        reject(chrome.runtime.lastError);
+      } else {
+        resolve(response);
+      }
+    });
+  });
 }
 
 async function updateSnippetUsed(snippet) {
