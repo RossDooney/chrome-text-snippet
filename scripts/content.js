@@ -9,9 +9,6 @@ document.addEventListener('keydown', async function(event) {
 
     const currentKey = event.key
     const activeElement = document.activeElement;
-    const currentSearchString = () => {
-      return activeElement.value.slice((searchStartPoint + 1), (searchStartPoint + searchLength + 1))
-    };
 
     if (!activeElement.tagName === "TEXTAREA" || !activeElement.tagName === "INPUT") {
         return
@@ -24,7 +21,7 @@ document.addEventListener('keydown', async function(event) {
 
     if(currentKey.charCodeAt(0) === 69 && insertSearch){
 
-        searchString = currentSearchString()
+        searchString = await getCurrentSearchString(activeElement)
         let snippet = await fetchSnippet(searchString);  //grabbing to much data, but full entry needed for updateSnippetUsed function so will keep for now.
         if(snippet.snippetText){
             const insertEnd = searchStartPoint + searchString.length + 1;
@@ -59,9 +56,18 @@ document.addEventListener('keydown', async function(event) {
     }
 
     searchLength += 1;
-    snippets = await searchKeys(currentSearchString());
-   
+    searchString = await getCurrentSearchString(activeElement)
+    snippets = await searchKeys(searchString);
 });
+
+function getCurrentSearchString(activeElement) {
+  return new Promise((resolve) => {
+    requestAnimationFrame(() => {
+      const currentSearchString = activeElement.value.slice(searchStartPoint + 1, searchStartPoint + searchLength + 1);
+      resolve(currentSearchString);
+    });
+  });
+}
 
 function resetSearch() {
     insertSearch = false;

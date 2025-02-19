@@ -357,8 +357,7 @@ async function fetch_all_snippets(fetch_all_callback){
 
 async function search_keys(snippetCode, search_keys_callback){
   if(db){   
-    console.log(snippetCode)
-    
+   
     return true
   }
   else {
