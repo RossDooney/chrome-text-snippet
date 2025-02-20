@@ -3,6 +3,7 @@ let searchString = ""
 let statSearchKey = 92
 let searchStartPoint = 0
 let searchLength = 0
+let modal = null
 
 
 document.addEventListener('keydown', async function(event) {
@@ -15,7 +16,6 @@ document.addEventListener('keydown', async function(event) {
     }
 
     if(currentKey.charCodeAt(0) != 47 && !insertSearch){
-        console.log("Search not active")
         return
     }
 
@@ -37,10 +37,12 @@ document.addEventListener('keydown', async function(event) {
     }
 
     if(currentKey.charCodeAt(0) === 47 && !insertSearch){
+        resetSearch()
         insertSearch = true;
         searchStartPoint = activeElement.selectionStart;
         const rect = findCoordinates(activeElement, searchStartPoint);
-        createModelAtCursor(rect);
+        modal = createModelAtCursor(rect);
+        console.log(modal);
         console.log("search enabled at: ", searchStartPoint);
         return
     }
@@ -70,9 +72,14 @@ function getCurrentSearchString(activeElement) {
 }
 
 function resetSearch() {
-    insertSearch = false;
-    searchString = "";
-    searchLength = 0
+  console.log(modal);
+  if(modal){
+    modal.remove();
+  }
+
+  insertSearch = false;
+  searchString = "";
+  searchLength = 0
 }
 async function fetchSnippet(searchString) {
     return new Promise((resolve, reject) => {
@@ -127,6 +134,8 @@ function createModelAtCursor(rect){
     parentDiv.appendChild(modalBody);
   
     document.body.appendChild(parentDiv);
+
+    return parentDiv;
 }
 
 function createEle(elementType, attributes = {}, elementText = ""){
