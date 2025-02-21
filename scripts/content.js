@@ -61,6 +61,7 @@ document.addEventListener('keydown', async function(event) {
           }
           try{
             snippets = await searchKeys(searchString);
+            console.log(snippets);
           } catch(error){
             console.error("Error on searchString", error.message)
           }
