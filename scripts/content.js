@@ -52,10 +52,19 @@ document.addEventListener('keydown', async function(event) {
           console.log("Search size: " + searchLength);
           return;
       }
-
-      searchLength += 1;
-      searchString = await getCurrentSearchString(activeElement);
-      snippets = await searchKeys(searchString);
+      if(insertSearch){
+          searchLength += 1;
+          try{
+            searchString = await getCurrentSearchString(activeElement);
+          } catch(error){
+            console.error("Error on getCurrentSearchString", error.message)
+          }
+          try{
+            snippets = await searchKeys(searchString);
+          } catch(error){
+            console.error("Error on searchString", error.message)
+          }
+      }
   } catch (error) {
     if (error instanceof Error) {
         console.error("Error in keydown event:", error.message);  // Logs the message if it's an Error object
