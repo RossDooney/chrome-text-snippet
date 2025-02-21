@@ -2,13 +2,14 @@ const createDbBtn = document.getElementById("create_db");
 const deleteDbBtn = document.getElementById("delete_db");
 const getAllBtn = document.getElementById("getAll");
 
-document.querySelector('#go-to-options').addEventListener('click', function() {
-  if (chrome.runtime.openOptionsPage) {
+
+document.addEventListener("click", async function (event) {
+  console.log(elemId)
+  if(elemId === "go-to-options"){
+    console.log("0")
     chrome.runtime.openOptionsPage();
-  } else {
-    window.open(chrome.runtime.getURL('options.html'));
   }
-});
+})
 
 async function createDatabase() {
   return new Promise((resolve, reject) => {

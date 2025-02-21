@@ -225,9 +225,7 @@ async function open_db(open_db_callback, callback_params = []){
     request.onsuccess = function (event) {
       db = event.target.result;
       if(open_db_callback){
-        if(callback_params){
-          open_db_callback(...callback_params);
-        }
+        open_db_callback(...callback_params);
       }
       resolve();
     };
@@ -362,7 +360,11 @@ async function search_keys(snippetCode, search_keys_callback){
   }
   else {
     console.log("Database is not initialized");
-    await open_db(search_keys, [snippetCode, search_keys_callback]);
+    try{
+      await open_db(search_keys, [snippetCode, search_keys_callback]);
+    } catch(error){
+      console.error("Error in open_db:", error.message);
+    }
   }
 }
 

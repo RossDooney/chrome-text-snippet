@@ -7,69 +7,63 @@ let modal = null
 
 
 document.addEventListener('keydown', async function(event) {
+  try {
+      const currentKey = event.key;
+      const activeElement = document.activeElement;
 
-    const currentKey = event.key
-    const activeElement = document.activeElement;
+      if (activeElement.tagName !== "TEXTAREA" && activeElement.tagName !== "INPUT") {
+          return;
+      }
 
-    if (!activeElement.tagName === "TEXTAREA" || !activeElement.tagName === "INPUT") {
-        return
+      if (currentKey.charCodeAt(0) !== 47 && !insertSearch) {
+          return;
+      }
+
+      if (currentKey.charCodeAt(0) === 69 && insertSearch) {
+          searchString = await getCurrentSearchString(activeElement);
+          let snippet = await fetchSnippet(searchString);
+          if (snippet.snippetText) {
+              const insertEnd = searchStartPoint + searchString.length + 1;
+              activeElement.setRangeText(snippet.snippetText, searchStartPoint, insertEnd, 'select');
+              updateSnippetUsed(snippet);
+              resetSearch();
+              return;
+          }
+          console.log("Nothing found");
+          resetSearch();
+          return;
+      }
+
+      if (currentKey.charCodeAt(0) === 47 && !insertSearch) {
+          insertSearch = true;
+          searchStartPoint = activeElement.selectionStart;
+          const rect = findCoordinates(activeElement, searchStartPoint);
+          modal = createModelAtCursor(rect);
+          console.log("search enabled at: ", searchStartPoint);
+          return;
+      }
+
+      if (currentKey.charCodeAt(0) === 66 && insertSearch) {
+          if (searchLength <= 0) {
+              resetSearch();
+              return;
+          }
+          searchLength -= 1;
+          console.log("Search size: " + searchLength);
+          return;
+      }
+
+      searchLength += 1;
+      searchString = await getCurrentSearchString(activeElement);
+      snippets = await searchKeys(searchString);
+  } catch (error) {
+    if (error instanceof Error) {
+        console.error("Error in keydown event:", error.message);  // Logs the message if it's an Error object
+    } else {
+        console.error("Non-Error object caught:", JSON.stringify(error, null, 2));  // If it's an object, log it properly
     }
-
-    if(currentKey.charCodeAt(0) != 47 && !insertSearch){
-        return
-    }
-
-    if(currentKey.charCodeAt(0) === 69 && insertSearch){
-
-        searchString = await getCurrentSearchString(activeElement)
-        let snippet = await fetchSnippet(searchString);  //grabbing to much data, but full entry needed for updateSnippetUsed function so will keep for now.
-        if(snippet.snippetText){
-            const insertEnd = searchStartPoint + searchString.length + 1;
-            activeElement.setRangeText(snippet.snippetText, searchStartPoint, insertEnd, 'select');
-            updateSnippetUsed(snippet);
-            resetSearch()
-            return
-        }
-
-        console.log("Nothing found")
-        resetSearch()
-        return  
-    }
-
-    if(currentKey.charCodeAt(0) === 47 && !insertSearch){
-        resetSearch()
-        insertSearch = true;
-        searchStartPoint = activeElement.selectionStart;
-        const rect = findCoordinates(activeElement, searchStartPoint);
-        modal = createModelAtCursor(rect);
-        console.log(modal);
-        console.log("search enabled at: ", searchStartPoint);
-        return
-    }
-
-    if(currentKey.charCodeAt(0) === 66 && insertSearch){
-        if(searchLength <= 0){
-            resetSearch()
-            return
-        }
-        searchLength -= 1;
-        console.log("Search size: " + searchLength);
-        return
-    }
-
-    searchLength += 1;
-    searchString = await getCurrentSearchString(activeElement)
-    snippets = await searchKeys(searchString);
+  }
 });
-
-function getCurrentSearchString(activeElement) {
-  return new Promise((resolve) => {
-    requestAnimationFrame(() => {
-      const currentSearchString = activeElement.value.slice(searchStartPoint + 1, searchStartPoint + searchLength + 1);
-      resolve(currentSearchString);
-    });
-  });
-}
 
 function resetSearch() {
   console.log(modal);
@@ -81,6 +75,25 @@ function resetSearch() {
   searchString = "";
   searchLength = 0
 }
+
+
+async function getCurrentSearchString(activeElement) {
+  return new Promise((resolve, reject) => {
+    try {
+      requestAnimationFrame(() => {
+        if (!activeElement || !activeElement.value) {
+          return reject(new Error("Invalid activeElement or value"));
+        }
+        
+        const currentSearchString = activeElement.value.slice(searchStartPoint + 1, searchStartPoint + searchLength + 1);
+        resolve(currentSearchString);
+      });
+    } catch (error) {
+      reject(error); 
+    }
+  });
+}
+
 async function fetchSnippet(searchString) {
     return new Promise((resolve, reject) => {
       chrome.runtime.sendMessage({ event: "get", searchString }, (response) => {
@@ -159,8 +172,10 @@ function findCoordinates(activeElement, curPos){
     font: ${computedStyle.font};
     letter-spacing: ${computedStyle.letterSpacing};
   `;
+  const fontSize = parseFloat(computedStyle.fontSize);
+  const lineHeight = computedStyle.lineHeight === "normal" ? fontSize * 1.3 : parseFloat(computedStyle.lineHeight * 1.1);
 
-  div.style.top = `${activeElement.getBoundingClientRect().top}px`;
+  div.style.top = `${activeElement.getBoundingClientRect().top + lineHeight}px`;
   div.style.left = `${activeElement.getBoundingClientRect().left}px`;
 
   const text = activeElement.value.substring(0, curPos); 
