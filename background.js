@@ -355,7 +355,28 @@ async function fetch_all_snippets(fetch_all_callback){
 
 async function search_keys(snippetCode, search_keys_callback){
   if(db){   
+    const search_transaction = db.transaction("snippets", "readonly");
+    const objectStore = search_transaction.objectStore("snippets");
+    const keys = [];
     
+    search_transaction.onerror = function(){
+      console.log("There was an error getting records.");
+      search_keys_callback(undefined);
+    }
+
+    objectStore.openCursor().onsuccess = function(event) {
+      const cursor = event.target.result;
+      if(cursor){
+        if(cursor.key.toString().startsWith(snippetCode)){
+          keys.push(cursor.key);
+          
+        }
+        cursor.continue();
+      } else{
+        search_keys_callback(keys);
+      }
+    }
+
     return true
   }
   else {

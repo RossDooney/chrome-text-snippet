@@ -80,11 +80,11 @@ document.addEventListener("click", async function (event) {
         return;
       }
     default:
-      if(modal && !event.target.closest(".snippetModal")){
-        modal.remove();
-        return true;
-      }
-      console.warn(`Unhandled button action: ${elemId}`);
+      // if(modal && !event.target.closest(".snippetModal")){
+      //   modal.remove();
+      //   return true;
+      // }
+      // console.warn(`Unhandled button action: ${elemId}`);
       break;
   }
 });

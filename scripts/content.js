@@ -14,11 +14,11 @@ document.addEventListener('keydown', async function(event) {
       if (activeElement.tagName !== "TEXTAREA" && activeElement.tagName !== "INPUT") {
           return;
       }
-
+      //search not enable and search key not pressed so just exit
       if (currentKey.charCodeAt(0) !== 47 && !insertSearch) {
           return;
       }
-
+      //if enter is pressed, use the current key bode to find key value and update text field with it
       if (currentKey.charCodeAt(0) === 69 && insertSearch) {
           searchString = await getCurrentSearchString(activeElement);
           let snippet = await fetchSnippet(searchString);
@@ -33,38 +33,37 @@ document.addEventListener('keydown', async function(event) {
           resetSearch();
           return;
       }
-
+      //enable search
       if (currentKey.charCodeAt(0) === 47 && !insertSearch) {
           insertSearch = true;
           searchStartPoint = activeElement.selectionStart;
           const rect = findCoordinates(activeElement, searchStartPoint);
           modal = createModelAtCursor(rect);
           console.log("search enabled at: ", searchStartPoint);
+          return true;
+      }
+      if (currentKey === "Backspace" && insertSearch) {
+        if (searchLength <= 0) {
+          resetSearch();
           return;
+        }
+        searchLength -= 1;
+        return;
       }
 
-      if (currentKey.charCodeAt(0) === 66 && insertSearch) {
-          if (searchLength <= 0) {
-              resetSearch();
-              return;
-          }
-          searchLength -= 1;
-          console.log("Search size: " + searchLength);
-          return;
-      }
       if(insertSearch){
-          searchLength += 1;
-          try{
-            searchString = await getCurrentSearchString(activeElement);
-          } catch(error){
-            console.error("Error on getCurrentSearchString", error.message)
-          }
-          try{
-            snippets = await searchKeys(searchString);
-            console.log(snippets);
-          } catch(error){
-            console.error("Error on searchString", error.message)
-          }
+        searchLength += 1;
+        try{
+          searchString = await getCurrentSearchString(activeElement);
+        } catch(error){
+          console.error("Error on getCurrentSearchString", error.message)
+        }
+        try{
+          snippets = await searchKeys(searchString);
+          console.log(snippets);
+        } catch(error){
+          console.error("Error on searchString", error.message)
+        }
       }
   } catch (error) {
     if (error instanceof Error) {
@@ -76,7 +75,6 @@ document.addEventListener('keydown', async function(event) {
 });
 
 function resetSearch() {
-  console.log(modal);
   if(modal){
     modal.remove();
   }

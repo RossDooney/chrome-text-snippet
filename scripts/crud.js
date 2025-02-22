@@ -4,6 +4,7 @@ const getAllBtn = document.getElementById("getAll");
 
 
 document.addEventListener("click", async function (event) {
+  const elemId = event.target.id;
   console.log(elemId)
   if(elemId === "go-to-options"){
     console.log("0")
