@@ -51,7 +51,7 @@ document.addEventListener('keydown', async function(event) {
         return;
       }
 
-      if(insertSearch){
+      if(/^[a-zA-Z0-9]$/.test(currentKey) && insertSearch){
         searchLength += 1;
         try{
           searchString = await getCurrentSearchString(activeElement);
