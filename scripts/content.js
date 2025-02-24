@@ -60,7 +60,7 @@ document.addEventListener('keydown', async function(event) {
         }
         try{
           snippets = await searchKeys(searchString);
-          console.log(snippets);
+          modalUpdate(snippets);
         } catch(error){
           console.error("Error on searchString", error.message)
         }
@@ -150,13 +150,19 @@ function createModelAtCursor(rect){
     const modalBody = createEle("div", {class: "modalBody"});    
     modalHeader.appendChild(createEle("h2", "","Search Snippet"))
     modalHeader.appendChild(createEle("button", {class: "closeModalBtn"}, "\u00D7 "))
+    
     parentDiv.appendChild(modalHeader);
-
     parentDiv.appendChild(modalBody);
   
     document.body.appendChild(parentDiv);
 
     return parentDiv;
+}
+
+function modalUpdate(args){
+  const modalBody = modal.querySelector('.modalBody');
+
+  console.log(modalBody)
 }
 
 function createEle(elementType, attributes = {}, elementText = ""){

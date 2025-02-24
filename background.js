@@ -368,9 +368,7 @@ async function search_keys(snippetCode, search_keys_callback){
       const cursor = event.target.result;
       if(cursor){
         if(cursor.key.toString().startsWith(snippetCode)){
-          console.log(cursor)
-          keys.push(cursor.key);
-          
+          keys.push([cursor.key, cursor.value.snippetText]);          
         }
         cursor.continue();
       } else{
