@@ -164,8 +164,12 @@ function modalUpdate(snippets){
   modalBody.replaceChildren();
   console.log(snippets[1])
   Object.entries(snippets).forEach(([key, value]) => {
-    modalBody.appendChild(createEle("h2", "", value[0]))
-    modalBody.appendChild(createEle("h3", "", value[1]))
+    let snippetResult = createEle("div", {class: "snippetResult"})
+
+    snippetResult.appendChild(createEle("h2", "", value[0]))
+    snippetResult.appendChild(createEle("h3", "", value[1]))
+
+    modalBody.appendChild(snippetResult);
   })
 
 }

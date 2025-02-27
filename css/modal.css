@@ -34,3 +34,7 @@
 .modalBody{
     padding: 10px 15px;
 }
+
+.snippetResult:hover {
+    background-color: rgb(52, 50, 50);
+}
