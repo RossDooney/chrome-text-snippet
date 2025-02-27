@@ -159,10 +159,15 @@ function createModelAtCursor(rect){
     return parentDiv;
 }
 
-function modalUpdate(args){
+function modalUpdate(snippets){
   const modalBody = modal.querySelector('.modalBody');
+  modalBody.replaceChildren();
+  console.log(snippets[1])
+  Object.entries(snippets).forEach(([key, value]) => {
+    modalBody.appendChild(createEle("h2", "", value[0]))
+    modalBody.appendChild(createEle("h3", "", value[1]))
+  })
 
-  console.log(modalBody)
 }
 
 function createEle(elementType, attributes = {}, elementText = ""){
