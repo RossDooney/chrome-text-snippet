@@ -1,15 +1,16 @@
 let insertSearch = false
-let searchString = ""
 let statSearchKey = 92
 let searchStartPoint = 0
 let searchLength = 0
 let modal = null
+let previousActiveElemental = null
 
 
 document.addEventListener('keydown', async function(event) {
   try {
       const currentKey = event.key;
       const activeElement = document.activeElement;
+      previousActiveElemental = document.activeElement;
 
       if (activeElement.tagName !== "TEXTAREA" && activeElement.tagName !== "INPUT") {
           return;
@@ -19,19 +20,22 @@ document.addEventListener('keydown', async function(event) {
           return;
       }
       //if enter is pressed, use the current key bode to find key value and update text field with it
+
       if (currentKey.charCodeAt(0) === 69 && insertSearch) {
-          searchString = await getCurrentSearchString(activeElement);
-          let snippet = await fetchSnippet(searchString);
-          if (snippet.snippetText) {
-              const insertEnd = searchStartPoint + searchString.length + 1;
-              activeElement.setRangeText(snippet.snippetText, searchStartPoint, insertEnd, 'select');
-              updateSnippetUsed(snippet);
-              resetSearch();
-              return;
-          }
-          console.log("Nothing found");
-          resetSearch();
-          return;
+        await applySnippet(activeElement);
+        return
+        // searchString = await getCurrentSearchString(activeElement);
+          // let snippet = await fetchSnippet(searchString);
+          // if (snippet.snippetText) {
+          //     const insertEnd = searchStartPoint + searchString.length + 1;
+          //     activeElement.setRangeText(snippet.snippetText, searchStartPoint, insertEnd, 'select');
+          //     updateSnippetUsed(snippet);
+          //     resetSearch();
+          //     return;
+          // }
+          // console.log("Nothing found");
+          // resetSearch();
+          // return;
       }
       //enable search
       if (currentKey.charCodeAt(0) === 47 && !insertSearch) {
@@ -74,13 +78,36 @@ document.addEventListener('keydown', async function(event) {
   }
 });
 
+document.addEventListener("click", async function (event) {
+  if(event.target.className === "snippetResult"){
+    applySnippet(previousActiveElemental, "ca");
+  }
+});
+
+async function applySnippet(activeElement, searchString = null){
+
+  if (!searchString){
+    searchString = await getCurrentSearchString(activeElement);
+  }
+  let snippet = await fetchSnippet(searchString);
+  if (snippet.snippetText) {
+    const insertEnd = searchStartPoint + searchString.length + 1;
+    activeElement.setRangeText(snippet.snippetText, searchStartPoint, insertEnd, 'select');
+    updateSnippetUsed(snippet);
+    resetSearch();
+    return;
+  }
+  console.log("Nothing found");
+  resetSearch();
+  return;
+}
+
 function resetSearch() {
   if(modal){
     modal.remove();
   }
 
   insertSearch = false;
-  searchString = "";
   searchLength = 0
 }
 
