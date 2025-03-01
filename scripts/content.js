@@ -67,8 +67,9 @@ document.addEventListener('keydown', async function(event) {
 });
 
 
-document.addEventListener("click", async function (event) {
-  const resultDiv = event.target.closest('.snippetResult')
+document.addEventListener("mousedown", async function (event) {
+  const currentElement = event.target;
+  const resultDiv = currentElement.closest('.snippetResult')
   if(resultDiv){
     //needs to be updated to pass snippet text as well so there isn't a need to get from db.
     const snippetCode = resultDiv.querySelector(".snippetCode").textContent
@@ -76,7 +77,18 @@ document.addEventListener("click", async function (event) {
       const searchString = resultDiv
       applySnippet(previousActiveElemental, snippetCode);
     }
+    return;
   }
+
+  if(currentElement.closest(".snippetModal")){
+    return;
+  }
+
+  if(previousActiveElemental !== currentElement){
+    resetSearch();
+    return;
+  }
+
 });
 
 async function applySnippet(activeElement, searchString = null){
