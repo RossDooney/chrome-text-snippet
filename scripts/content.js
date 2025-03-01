@@ -24,18 +24,6 @@ document.addEventListener('keydown', async function(event) {
       if (currentKey.charCodeAt(0) === 69 && insertSearch) {
         await applySnippet(activeElement);
         return
-        // searchString = await getCurrentSearchString(activeElement);
-          // let snippet = await fetchSnippet(searchString);
-          // if (snippet.snippetText) {
-          //     const insertEnd = searchStartPoint + searchString.length + 1;
-          //     activeElement.setRangeText(snippet.snippetText, searchStartPoint, insertEnd, 'select');
-          //     updateSnippetUsed(snippet);
-          //     resetSearch();
-          //     return;
-          // }
-          // console.log("Nothing found");
-          // resetSearch();
-          // return;
       }
       //enable search
       if (currentKey.charCodeAt(0) === 47 && !insertSearch) {
@@ -78,9 +66,16 @@ document.addEventListener('keydown', async function(event) {
   }
 });
 
+
 document.addEventListener("click", async function (event) {
-  if(event.target.className === "snippetResult"){
-    applySnippet(previousActiveElemental, "ca");
+  const resultDiv = event.target.closest('.snippetResult')
+  if(resultDiv){
+    //needs to be updated to pass snippet text as well so there isn't a need to get from db.
+    const snippetCode = resultDiv.querySelector(".snippetCode").textContent
+    if(snippetCode){
+      const searchString = resultDiv
+      applySnippet(previousActiveElemental, snippetCode);
+    }
   }
 });
 
@@ -106,7 +101,8 @@ function resetSearch() {
   if(modal){
     modal.remove();
   }
-
+  
+  previousActiveElemental = null
   insertSearch = false;
   searchLength = 0
 }
@@ -189,12 +185,11 @@ function createModelAtCursor(rect){
 function modalUpdate(snippets){
   const modalBody = modal.querySelector('.modalBody');
   modalBody.replaceChildren();
-  console.log(snippets[1])
   Object.entries(snippets).forEach(([key, value]) => {
     let snippetResult = createEle("div", {class: "snippetResult"})
 
-    snippetResult.appendChild(createEle("h2", "", value[0]))
-    snippetResult.appendChild(createEle("h3", "", value[1]))
+    snippetResult.appendChild(createEle("h2", {class: "snippetCode"}, value[0]))
+    snippetResult.appendChild(createEle("h3", {class: "snippetValue"}, value[1]))
 
     modalBody.appendChild(snippetResult);
   })
