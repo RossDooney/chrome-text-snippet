@@ -35,6 +35,6 @@
     padding: 10px 15px;
 }
 
-.snippetResult:hover {
+.snippetResult.selected {
     background-color: rgb(52, 50, 50);
 }

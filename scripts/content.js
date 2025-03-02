@@ -4,13 +4,30 @@ let searchStartPoint = 0
 let searchLength = 0
 let modal = null
 let previousActiveElemental = null
+let selectedIndex = -1;
 
 
 document.addEventListener('keydown', async function(event) {
   try {
       const currentKey = event.key;
       const activeElement = document.activeElement;
+      const checkSelect = window.getSelection().toString(); // check to see if text is highlighted during keydown
+
       previousActiveElemental = document.activeElement;
+
+      if(modal){
+        const modalItems = modal.querySelectorAll(".snippetResult");
+      
+        if(event.key === "ArrowDown"){
+          event.preventDefault();
+        } else if(event.key === "ArrowUp"){
+          event.preventDefault();
+        } else if(event.key === "Enter" && selectedIndex >= 0){
+          event.preventDefault();
+        }
+
+      }
+
 
       if (activeElement.tagName !== "TEXTAREA" && activeElement.tagName !== "INPUT") {
           return;
@@ -19,7 +36,7 @@ document.addEventListener('keydown', async function(event) {
       if (currentKey.charCodeAt(0) !== 47 && !insertSearch) {
           return;
       }
-      //if enter is pressed, use the current key bode to find key value and update text field with it
+      //if enter is pressed, use the current key code to find key value and update text field with it
 
       if (currentKey.charCodeAt(0) === 69 && insertSearch) {
         await applySnippet(activeElement);
@@ -54,7 +71,7 @@ document.addEventListener('keydown', async function(event) {
           snippets = await searchKeys(searchString);
           modalUpdate(snippets);
         } catch(error){
-          console.error("Error on searchString", error.message)
+          console.error("Error on searchKeys", error.message)
         }
       }
   } catch (error) {
@@ -91,6 +108,7 @@ document.addEventListener("mousedown", async function (event) {
 
 });
 
+
 async function applySnippet(activeElement, searchString = null){
 
   if (!searchString){
@@ -114,9 +132,10 @@ function resetSearch() {
     modal.remove();
   }
   
-  previousActiveElemental = null
+  previousActiveElemental = null;
   insertSearch = false;
-  searchLength = 0
+  searchLength = 0;
+  modal = null;
 }
 
 
@@ -196,17 +215,25 @@ function createModelAtCursor(rect){
 
 function modalUpdate(snippets){
   const modalBody = modal.querySelector('.modalBody');
+  let firstElement = true
   modalBody.replaceChildren();
+
   Object.entries(snippets).forEach(([key, value]) => {
-    let snippetResult = createEle("div", {class: "snippetResult"})
+    let snippetResult;
+    if (firstElement){
+      snippetResult = createEle("div", {class: "snippetResult selected"})
+      firstElement = false
+    }
+    else{
+      snippetResult = createEle("div", {class: "snippetResult"})
+    }
 
     snippetResult.appendChild(createEle("h2", {class: "snippetCode"}, value[0]))
     snippetResult.appendChild(createEle("h3", {class: "snippetValue"}, value[1]))
 
     modalBody.appendChild(snippetResult);
   })
-
-}
+};
 
 function createEle(elementType, attributes = {}, elementText = ""){
     const element = document.createElement(elementType);
