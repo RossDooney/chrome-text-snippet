@@ -11,38 +11,37 @@ document.addEventListener('keydown', async function(event) {
   try {
       const currentKey = event.key;
       const activeElement = document.activeElement;
-      const checkSelect = window.getSelection().toString(); // check to see if text is highlighted during keydown
+   //   const checkSelect = window.getSelection().toString(); // check to see if text is highlighted during keydown
 
       previousActiveElemental = document.activeElement;
-
       if(modal){
         const modalItems = modal.querySelectorAll(".snippetResult");
 
         if(event.key === "ArrowDown"){
           if(modalItems.length === 0) return;
-          event.preventDefault(modalItems);
-          selectedIndex = (selectedIndex + 1) % modalItems.length;
-          updateSelectedElement(modalItems);
-          return;
-        } else if(event.key === "ArrowUp"){
-          if(modalItems.length === 0) return;
-          event.preventDefault(modalItems);
-          selectedIndex = (selectedIndex - 1) % modalItems.length;
-          updateSelectedElement(modalItems);
-          return;
-        } else if(event.key === "Enter" && selectedIndex >= 0){
-          if(modalItems.length === 0) return;
-          event.preventDefault(modalItems);
-
-          const selectedItem = modal.querySelector(".selected");
-          if(selectedItem){
-            //needs to be updated to pass snippet text as well so there isn't a need to get from db.
-            const snippetCode = selectedItem.querySelector(".snippetCode").textContent
-            if(snippetCode){
-              applySnippet(previousActiveElemental, snippetCode);
-            }
+            event.preventDefault(modalItems);
+            selectedIndex = (selectedIndex + 1) % modalItems.length;
+            updateSelectedElement(modalItems);
             return;
-          }
+          } else if(event.key === "ArrowUp"){
+          if(modalItems.length === 0) return;
+            event.preventDefault(modalItems);
+            selectedIndex = (selectedIndex - 1) % modalItems.length;
+            updateSelectedElement(modalItems);
+            return;
+          } else if(event.key === "Enter" && selectedIndex >= 0){
+            if(modalItems.length === 0) return;
+            event.preventDefault(modalItems);
+
+            const selectedItem = modal.querySelector(".selected");
+            if(selectedItem){
+              //needs to be updated to pass snippet text as well so there isn't a need to get from db.
+              const snippetCode = selectedItem.querySelector(".snippetCode").textContent
+              if(snippetCode){
+                applySnippet(previousActiveElemental, snippetCode);
+              }
+              return;
+            }
         }
       }
 
@@ -54,10 +53,9 @@ document.addEventListener('keydown', async function(event) {
           return;
       }
       //if enter is pressed, use the current key code to find key value and update text field with it
-
-      if (currentKey.charCodeAt(0) === 69 && insertSearch) {
+      if (currentKey === "Enter" && insertSearch) {
         await applySnippet(activeElement);
-        return
+        return;
       }
       //enable search
       if (currentKey.charCodeAt(0) === 47 && !insertSearch) {
@@ -77,8 +75,13 @@ document.addEventListener('keydown', async function(event) {
         return;
       }
 
+      if(currentKey === "Escape" && modal){
+        resetSearch();
+      }
+
       if(/^[a-zA-Z0-9]$/.test(currentKey) && insertSearch){
         searchLength += 1;
+
         try{
           searchString = await getCurrentSearchString(activeElement);
         } catch(error){
@@ -93,7 +96,7 @@ document.addEventListener('keydown', async function(event) {
       }
   } catch (error) {
     if (error instanceof Error) {
-        console.error("Error in keydown event:", error.message);  // Logs the message if it's an Error object
+        console.error("Error in keydown event:", error);  // Logs the message if it's an Error object
     } else {
         console.error("Non-Error object caught:", JSON.stringify(error, null, 2));  // If it's an object, log it properly
     }
@@ -127,7 +130,7 @@ document.addEventListener("mousedown", async function (event) {
 
 
 async function applySnippet(activeElement, searchString = null){
-
+  
   if (!searchString){
     searchString = await getCurrentSearchString(activeElement);
   }
@@ -164,10 +167,12 @@ function updateSelectedElement(modalItems){
 
 
 async function getCurrentSearchString(activeElement) {
+
   return new Promise((resolve, reject) => {
     try {
       requestAnimationFrame(() => {
         if (!activeElement || !activeElement.value) {
+          resetSearch();
           return reject(new Error("Invalid activeElement or value"));
         }
         
