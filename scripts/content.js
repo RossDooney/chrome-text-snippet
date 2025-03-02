@@ -4,7 +4,7 @@ let searchStartPoint = 0
 let searchLength = 0
 let modal = null
 let previousActiveElemental = null
-let selectedIndex = -1;
+let selectedIndex = 0;
 
 
 document.addEventListener('keydown', async function(event) {
@@ -17,17 +17,34 @@ document.addEventListener('keydown', async function(event) {
 
       if(modal){
         const modalItems = modal.querySelectorAll(".snippetResult");
-      
+
         if(event.key === "ArrowDown"){
-          event.preventDefault();
+          if(modalItems.length === 0) return;
+          event.preventDefault(modalItems);
+          selectedIndex = (selectedIndex + 1) % modalItems.length;
+          updateSelectedElement(modalItems);
+          return;
         } else if(event.key === "ArrowUp"){
-          event.preventDefault();
+          if(modalItems.length === 0) return;
+          event.preventDefault(modalItems);
+          selectedIndex = (selectedIndex - 1) % modalItems.length;
+          updateSelectedElement(modalItems);
+          return;
         } else if(event.key === "Enter" && selectedIndex >= 0){
-          event.preventDefault();
+          if(modalItems.length === 0) return;
+          event.preventDefault(modalItems);
+
+          const selectedItem = modal.querySelector(".selected");
+          if(selectedItem){
+            //needs to be updated to pass snippet text as well so there isn't a need to get from db.
+            const snippetCode = selectedItem.querySelector(".snippetCode").textContent
+            if(snippetCode){
+              applySnippet(previousActiveElemental, snippetCode);
+            }
+            return;
+          }
         }
-
       }
-
 
       if (activeElement.tagName !== "TEXTAREA" && activeElement.tagName !== "INPUT") {
           return;
@@ -91,7 +108,7 @@ document.addEventListener("mousedown", async function (event) {
     //needs to be updated to pass snippet text as well so there isn't a need to get from db.
     const snippetCode = resultDiv.querySelector(".snippetCode").textContent
     if(snippetCode){
-      const searchString = resultDiv
+ //     const searchString = resultDiv
       applySnippet(previousActiveElemental, snippetCode);
     }
     return;
@@ -127,7 +144,7 @@ async function applySnippet(activeElement, searchString = null){
   return;
 }
 
-function resetSearch() {
+function resetSearch(){
   if(modal){
     modal.remove();
   }
@@ -136,6 +153,13 @@ function resetSearch() {
   insertSearch = false;
   searchLength = 0;
   modal = null;
+}
+
+function updateSelectedElement(modalItems){
+  modalItems.forEach(modalItem => modalItem.classList.remove("selected"));
+  if (selectedIndex >= 0){
+    modalItems[selectedIndex].classList.add("selected");
+  }
 }
 
 
