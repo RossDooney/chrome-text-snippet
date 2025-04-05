@@ -96,9 +96,9 @@ document.addEventListener('keydown', async function(event) {
       }
   } catch (error) {
     if (error instanceof Error) {
-        console.error("Error in keydown event:", error);  // Logs the message if it's an Error object
+        console.error("Error in keydown event:", error);  
     } else {
-        console.error("Non-Error object caught:", JSON.stringify(error, null, 2));  // If it's an object, log it properly
+        console.error("Non-Error object caught:", JSON.stringify(error, null, 2));  
     }
   }
 });
@@ -229,12 +229,12 @@ function createModelAtCursor(rect){
     parentDiv.style.left = `${rect.left}px`;
     parentDiv.style.top = `${rect.top}px`;
 
-    const modalHeader = createEle("div", {class: "modalHeader"});
+    // const modalHeader = createEle("div", {class: "modalHeader"});
     const modalBody = createEle("div", {class: "modalBody"});    
-    modalHeader.appendChild(createEle("h2", "","Search Snippet"))
-    modalHeader.appendChild(createEle("button", {class: "closeModalBtn"}, "\u00D7 "))
+    // modalHeader.appendChild(createEle("h2", "","Search Snippet"))
+    // modalHeader.appendChild(createEle("button", {class: "closeModalBtn"}, "\u00D7 "))
     
-    parentDiv.appendChild(modalHeader);
+    // parentDiv.appendChild(modalHeader);
     parentDiv.appendChild(modalBody);
   
     document.body.appendChild(parentDiv);

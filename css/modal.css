@@ -1,11 +1,13 @@
 .snippetModal{
     border: 1px solid white;
-    border-radius: 10px;
+    border-radius: 5px;
     z-index: 9999;
     background-color: #23222B;
     color: #FFFFFF;
     width: 300px;
     max-width: 40%;
+    max-height: 200px; 
+    overflow-y: auto;
 }
 
 .modalHeader{
@@ -32,8 +34,20 @@
 }
 
 .modalBody{
-    padding: 10px 15px;
+    padding: 3px 5px;
 }
+
+.snippetResult {
+    font-size: 16px; 
+}
+
+.snippetResult h2 {
+    font-size: 20px; 
+}
+  
+/* .snippetResult h3 {
+    font-size: 16px;
+} */
 
 .snippetResult.selected {
     background-color: rgb(52, 50, 50);
