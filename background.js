@@ -173,30 +173,16 @@ let db = null
 
 function create_database(create_db_callback){
   const request = indexedDB.open('testDB',1);
-
   request.onerror = function(event){
     console.log("unable to open db", event.target.error);
     if(create_db_callback){
       create_db_callback(new Error("Database open failed"));
     }
   }
-
   request.onupgradeneeded = function(event){
-
     db = event.target.result;
-
-    if (!db.objectStoreNames.contains('snippets')) {
-      const objectStore = db.createObjectStore('snippets', { keyPath: "snippetCode" });
-      objectStore.transaction.oncomplete = function () {
-        console.log("Object store 'snippets' created successfully.");
-      };
-
-      objectStore.transaction.onerror = function (event) {
-        console.error("Failed to create object store:", event.target.error);
-      };
-    } else {
-      console.log("Object store 'snippets' already exists.");
-    }
+    console.log("onupgrade called")
+    setup_schema();
   };
   request.onsuccess = function (event) {
     db = event.target.result;
@@ -221,6 +207,11 @@ async function open_db(open_db_callback, callback_params = []){
     request.onerror = function(event){
       reject(event.target.error); 
     }
+    request.onupgradeneeded = function(event){
+      db = event.target.result;
+      console.log("onupgrade called")
+      setup_schema();
+    };
 
     request.onsuccess = function (event) {
       db = event.target.result;
@@ -230,6 +221,33 @@ async function open_db(open_db_callback, callback_params = []){
       resolve();
     };
   });
+}
+
+function setup_schema(){
+  console.log("Setup Schema called")
+  if (!db.objectStoreNames.contains('snippets')) {
+    const objectStore = db.createObjectStore('snippets', { keyPath: "snippetCode" });
+    objectStore.transaction.oncomplete = function () {
+      console.log("Object store 'snippets' created successfully.");
+    };
+
+    objectStore.transaction.onerror = function (event) {
+      console.error("Failed to create object store:", event.target.error);
+    };
+  } else {
+    console.log("Object store 'snippets' already exists.");
+  }
+  if (!db.objectStoreNames.contains('dynamic_entries')) {
+    const objectStore = db.createObjectStore('dynamic_entries', { keyPath: "enteryCode" });
+    objectStore.transaction.oncomplete = function () {
+      console.log("Object store 'dynamic_entries' created successfully.");
+    };
+    objectStore.transaction.onerror = function (event) {
+      console.error("Failed to create object store:", event.target.error);
+    };
+  } else {
+    console.log("Object store 'dynamic_entries' already exists.");
+  }
 }
 
 function delete_database(delete_db_callback){

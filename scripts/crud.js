@@ -6,9 +6,28 @@ const getAllBtn = document.getElementById("getAll");
 document.addEventListener("click", async function (event) {
   const elemId = event.target.id;
   console.log(elemId)
+
+  switch(elemId){
+    case "go-to-options":
+      chrome.runtime.openOptionsPage();
+      return true;
+    case "create_db":
+      await createDatabase();
+      return true;
+    case "delete_db":
+      console.log("1")
+      await deleteDatabase();
+      return true;
+    default:
+      return true;    
+  }
+
+
   if(elemId === "go-to-options"){
-    console.log("0")
     chrome.runtime.openOptionsPage();
+  } else if(elemId === "create_db"){
+    console.log("0")
+    await createDatabase();
   }
 })
 
