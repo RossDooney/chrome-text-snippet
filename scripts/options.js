@@ -79,6 +79,11 @@ document.addEventListener("click", async function (event) {
         element.replaceWith(createSnippetRow(result));
         return;
       }
+    case "testEntries":
+      chrome.runtime.sendMessage({ event: "testEntries" }, () => {
+        console.log("TestEntrise clicked.")
+      })
+      
     default:
       // if(modal && !event.target.closest(".snippetModal")){
       //   modal.remove();

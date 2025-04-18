@@ -1,3 +1,7 @@
+import {insert_dynamic_entrie} from "./db.js"
+
+let db = null
+
 chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
   try {
     switch (data.event) {
@@ -157,6 +161,10 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
         }
         return true;
 
+      case "testEntries":
+        insert_dynamic_entrie();
+        return
+
       default:
         console.warn("Unhandled event:", data.event);
         sendResponse({ error: "Unhandled event type" });
@@ -168,8 +176,6 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
     return true;
   }
 });
-
-let db = null
 
 function create_database(create_db_callback){
   const request = indexedDB.open('testDB',1);
@@ -326,7 +332,7 @@ async function get_snippet(snippetCode, get_callback){
     }
 
     request.onsuccess = function(event){
-      result = event.target.result
+      const result = event.target.result
       if(result){
         get_callback(event.target.result);
       }else{
@@ -356,9 +362,9 @@ async function fetch_all_snippets(fetch_all_callback){
       console.log("unable to find snippet");
     }
     request.onsuccess = function(event){
-      result = event.target.result
+      const result = event.target.result
       if(result){
-        fetch_all_callback(event.target.result);
+        fetch_all_callback(result);
       }else{
         console.log("Not founds")
         fetch_all_callback(undefined)
@@ -405,7 +411,6 @@ async function search_keys(snippetCode, search_keys_callback){
     }
   }
 }
-
 
 async function update_snippet(snippet, update_callback){
   if(db){   
