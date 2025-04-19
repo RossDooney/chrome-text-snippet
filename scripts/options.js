@@ -1,3 +1,4 @@
+import {insert_dynamic_entry} from "./db.js"
 const snippetList = document.getElementById("snippetList")
 
 loadSnippets();
@@ -80,10 +81,9 @@ document.addEventListener("click", async function (event) {
         return;
       }
     case "testEntries":
-      chrome.runtime.sendMessage({ event: "testEntries" }, () => {
-        console.log("TestEntrise clicked.")
-      })
-      
+      await insert_dynamic_entry();
+      return true;
+  
     default:
       // if(modal && !event.target.closest(".snippetModal")){
       //   modal.remove();

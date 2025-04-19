@@ -1,5 +1,3 @@
-import {insert_dynamic_entrie} from "./db.js"
-
 let db = null
 
 chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
@@ -161,9 +159,9 @@ chrome.runtime.onMessage.addListener((data, sender, sendResponse) => {
         }
         return true;
 
-      case "testEntries":
-        insert_dynamic_entrie();
-        return
+      // case "testEntries":
+      //   insert_dynamic_entrie();
+      //   return
 
       default:
         console.warn("Unhandled event:", data.event);
@@ -381,7 +379,7 @@ async function search_keys(snippetCode, search_keys_callback){
   if(db){   
     const search_transaction = db.transaction("snippets", "readonly");
     const objectStore = search_transaction.objectStore("snippets");
-    const keys = [];
+    const keys = []
     
     search_transaction.onerror = function(){
       console.log("There was an error getting records.");
@@ -392,7 +390,7 @@ async function search_keys(snippetCode, search_keys_callback){
       const cursor = event.target.result;
       if(cursor){
         if(cursor.key.toString().startsWith(snippetCode)){
-          keys.push([cursor.key, cursor.value.snippetText]);          
+          keys.push({snippetCode: cursor.key, snippetText: cursor.value.snippetText});          
         }
         cursor.continue();
       } else{
@@ -460,7 +458,7 @@ async function snippet_used(snippet){
     }
     
     if(!snippet.timesUsed){
-      snippet.timesUsed = 1;
+      snippet.timesUsed = 0;
     }
 
     snippet.timesUsed += 1;

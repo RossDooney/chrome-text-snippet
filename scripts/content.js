@@ -272,6 +272,8 @@ function modalUpdate(snippets){
   let firstElement = true
   modalBody.replaceChildren();
 
+  console.log(snippets)
+
   Object.entries(snippets).forEach(([key, value]) => {
     let snippetResult;
     if (firstElement){
