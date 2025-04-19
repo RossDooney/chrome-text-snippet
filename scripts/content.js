@@ -74,6 +74,17 @@ document.addEventListener('keydown', async function(event) {
           return;
         }
         searchLength -= 1;
+        try{
+          searchString = await getCurrentSearchString(activeElement);
+        } catch(error){
+          console.error("Error on getCurrentSearchString", error.message)
+        }
+        try{
+          snippets = await searchKeys(searchString);
+          modalUpdate(snippets);
+        } catch(error){
+          console.error("Error on searchKeys", error.message)
+        }
         return;
       }
 
@@ -193,7 +204,7 @@ async function fetchAllSnippets() {
 }
 
 async function getCurrentSearchString(activeElement) {
-
+  console.log(searchLength)
   return new Promise((resolve, reject) => {
     try {
       requestAnimationFrame(() => {
