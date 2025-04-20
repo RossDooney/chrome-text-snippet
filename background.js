@@ -241,17 +241,6 @@ function setup_schema(){
   } else {
     console.log("Object store 'snippets' already exists.");
   }
-  if (!db.objectStoreNames.contains('dynamic_entries')) {
-    const objectStore = db.createObjectStore('dynamic_entries', { keyPath: "enteryCode" });
-    objectStore.transaction.oncomplete = function () {
-      console.log("Object store 'dynamic_entries' created successfully.");
-    };
-    objectStore.transaction.onerror = function (event) {
-      console.error("Failed to create object store:", event.target.error);
-    };
-  } else {
-    console.log("Object store 'dynamic_entries' already exists.");
-  }
 }
 
 function delete_database(delete_db_callback){

@@ -204,7 +204,7 @@ async function fetchAllSnippets() {
 }
 
 async function getCurrentSearchString(activeElement) {
-  console.log(searchLength)
+
   return new Promise((resolve, reject) => {
     try {
       requestAnimationFrame(() => {

@@ -1,12 +1,12 @@
-import {insert_dynamic_entry} from "./db.js"
+import * as db from "./db.js"
 const snippetList = document.getElementById("snippetList")
 
 loadSnippets();
 
 async function loadSnippets(){
   try {
-    await openDb();
-    let result = await fetchAllSnippets();
+    const result = await db.fetch_all_snippets();
+    console.log(result)
     result.forEach(snippet => {
       console.log("Snippet: ", snippet)
       snippetList.appendChild(createSnippetRow(snippet));
@@ -17,7 +17,6 @@ async function loadSnippets(){
   }
   return true;
 }
-
 
 document.addEventListener("click", async function (event) {
   const elemId = event.target.className;
@@ -70,8 +69,8 @@ document.addEventListener("click", async function (event) {
         snippetText: document.getElementById("snipText").value,
       }
       if(elemId === "insertSnip"){
-        result = await insertSnippets(snippet);
-        snippetList.appendChild(createSnippetRow(result));
+        await db.insert_snippets(snippet);
+        snippetList.appendChild(createSnippetRow(snippet));
         return;
       } else if(elemId  === "updateSnip"){
         const element = document.querySelector('[data-id='+ snippet.snippetCode +']');
@@ -80,9 +79,6 @@ document.addEventListener("click", async function (event) {
         element.replaceWith(createSnippetRow(result));
         return;
       }
-    case "testEntries":
-      await insert_dynamic_entry();
-      return true;
   
     default:
       // if(modal && !event.target.closest(".snippetModal")){
@@ -93,40 +89,6 @@ document.addEventListener("click", async function (event) {
       break;
   }
 });
-
-
-async function openDb(){
-  return new Promise((resolve, reject) => {
-    chrome.runtime.sendMessage({ event: "open_db"}, (response) => {
-      if (chrome.runtime.lastError) {
-        reject(chrome.runtime.lastError);
-      } else {
-        resolve(response);
-      }
-    });
-  });
-}
-
-async function fetchAllSnippets() {
-  try {
-    return await new Promise((resolve, reject) => {
-      chrome.runtime.sendMessage({ event: "get_all" }, (response) => {
-        if (chrome.runtime.lastError) {
-          console.error("Chrome runtime error in fetchAllSnippets:", chrome.runtime.lastError);
-          reject(chrome.runtime.lastError);
-        } else if (response.error) {
-          console.error("Error returned from get_all:", response.error);
-          reject(new Error(response.error));
-        } else {
-          resolve(response);
-        }
-      });
-    });
-  } catch (error) {
-    console.error("Error in fetchAllSnippets:", error);
-    throw error;
-  }
-}
 
 
 function createSnippetRow(snippet) {
