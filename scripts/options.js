@@ -8,7 +8,6 @@ async function loadSnippets(){
     const result = await db.fetch_all_snippets();
     console.log(result)
     result.forEach(snippet => {
-      console.log("Snippet: ", snippet)
       snippetList.appendChild(createSnippetRow(snippet));
     })
     return true;
@@ -21,7 +20,6 @@ async function loadSnippets(){
 document.addEventListener("click", async function (event) {
   const elemId = event.target.className;
   const modal = document.getElementById("snippetModal");
-  let result;
   switch(elemId){
     case "createBtn":
       if(modal){
@@ -40,9 +38,9 @@ document.addEventListener("click", async function (event) {
       if(parentRow){
         const snipId = parentRow.getAttribute("data-id")
         if(elemId == "snipDelete") {
-          result = await deleteSnippet(snipId);
+          await db.delete_snippet(snipId);
           parentRow.remove();
-          console.log("Delete click result: ", result.snippetText)
+          console.log("Delete click result: ", snipId)
           return true;
         }
         else{
@@ -74,9 +72,9 @@ document.addEventListener("click", async function (event) {
         return;
       } else if(elemId  === "updateSnip"){
         const element = document.querySelector('[data-id='+ snippet.snippetCode +']');
-        result = await updateSnippet(snippet)
-        console.log("Update click result: ", result);
-        element.replaceWith(createSnippetRow(result));
+        await db.update_snippet(snippet)
+        console.log("1")
+        element.replaceWith(createSnippetRow(snippet));
         return;
       }
   
@@ -109,7 +107,6 @@ function createSnippetRow(snippet) {
   tableRow.appendChild(createTd({class: "sniplastUpdate"}, snippet.lastUpdated))
   tableRow.appendChild(createTd({class: "sniplastUsed"}, snippet.lastUsed))
   tableRow.appendChild(createTd({class: "snipTimeUsed"}, snippet.timesUsed))  
-  console.log("Times used: ", snippet.timesUsed)
 
   const snipOptions = createEle("td", {class: "snipOption"});
 
